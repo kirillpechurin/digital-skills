@@ -18,3 +18,10 @@ class RequestToOrganisationService:
             return None, err
 
         return list_request_to_organisation, None
+
+    @staticmethod
+    def get_request_by_org_id(request_to_organisation: RequestToOrganisation):
+        request_to_organisation, err = RequestToOrganisationDao().get_by_id(request_to_organisation.id)
+        if err:
+            return None, err
+        return request_to_organisation, None

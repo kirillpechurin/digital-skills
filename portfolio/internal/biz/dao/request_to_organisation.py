@@ -2,7 +2,7 @@ from sqlalchemy import insert, and_
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.request_to_organisation import RequestToOrganisationDeserializer, \
-    DES_FROM_DB_ALL_ACTIVE_REQUESTS
+    DES_FROM_DB_ALL_ACTIVE_REQUESTS, DES_FROM_DB_DETAIL_REQUEST
 from portfolio.models.children import Children
 from portfolio.models.events import Events
 from portfolio.models.parents import Parents
@@ -41,7 +41,6 @@ class RequestToOrganisationDao(BaseDao):
                 Events._id.label('events_id'),
                 Events._name.label('events_name'),
                 Events._date_event.label('events_date_event'),
-                Events._organisation_id.label('events_organisation_id'),
                 Parents._id.label('parents_id'),
                 Parents._name.label('parents_name'),
                 Parents._surname.label('parents_surname'),
@@ -64,3 +63,37 @@ class RequestToOrganisationDao(BaseDao):
         if not data:
             return None, None
         return RequestToOrganisationDeserializer.deserialize(data, DES_FROM_DB_ALL_ACTIVE_REQUESTS), None
+
+    def get_by_id(self, request_id: int):
+        with self.session() as sess:
+            row = sess.query(
+                RequestToOrganisation._id.label('request_to_organisation_id'),
+                RequestToOrganisation._status.label('request_to_organisation_status'),
+                Events._id.label('events_id'),
+                Events._type.label('events_type'),
+                Events._name.label('events_name'),
+                Events._date_event.label('events_date_event'),
+                Events._hours.label('events_hours'),
+                Events._skill.label('events_skill'),
+                Parents._id.label('parents_id'),
+                Parents._name.label('parents_name'),
+                Parents._surname.label('parents_surname'),
+                Children._id.label('children_id'),
+                Children._name.label('children_name'),
+                Children._surname.label('children_surname'),
+                Children._date_born.label('children_date_born'),
+            ).join(
+                RequestToOrganisation._events
+            ).join(
+                RequestToOrganisation._parents
+            ).join(
+                RequestToOrganisation._children
+            ).where(
+                and_(
+                    RequestToOrganisation._id == request_id,
+                    RequestToOrganisation._status is False
+                )
+            ).first()
+        if not row:
+            return None, None
+        return RequestToOrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_REQUEST), None

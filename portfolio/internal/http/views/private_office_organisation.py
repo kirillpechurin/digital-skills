@@ -173,3 +173,25 @@ def get_requests(auth_account_main_id: int, organisation_id: int):
             )
         )
         return resp
+
+
+@private_office_organisation.route('/requests/<int:request_id>', methods=['POST', 'GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_detail_request(auth_account_main_id: int, organisation_id: int, request_id: int):
+    if request.method == 'GET':
+        request_to_organisation = RequestToOrganisation(
+            id=request_id,
+            events=Events(organisation=Organisation(
+                id=organisation_id)
+            )
+        )
+        request_to_organisation, err = RequestToOrganisationService.get_request_by_org_id(request_to_organisation)
+        if err:
+            return json.dumps(err)
+        resp = make_response(
+            render_template(
+                'organisation/detail_request.html',
+                request_to_organisation=request_to_organisation
+            )
+        )
+        return resp
