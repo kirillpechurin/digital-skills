@@ -9,3 +9,10 @@ class OrganisationService:
         if err:
             return None, err
         return list_organisations, None
+
+    @staticmethod
+    def get_by_id(organisation_id: int):
+        organisation, err = OrganisationDao().get_by_id(organisation_id)
+        if err:
+            return None, err
+        return organisation, None
