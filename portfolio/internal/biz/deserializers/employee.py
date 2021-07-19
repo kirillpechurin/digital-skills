@@ -2,6 +2,8 @@ from portfolio.internal.biz.deserializers.base_deserializer import BaseDeseriali
 from portfolio.models.employee import Employee
 
 DES_FROM_DB_ALL_EMPLOYEE = "des-from-db-all-employee"
+DES_FOR_ADD_EMPLOYEE = "des-for-add-employee"
+DES_FOR_EDIT_EMPLOYEE = "des-for-edit-employee"
 
 
 class EmployeeDeserializer(BaseDeserializer):
@@ -10,6 +12,12 @@ class EmployeeDeserializer(BaseDeserializer):
     def _get_deserializer(cls, format_des: str):
         if format_des == DES_FROM_DB_ALL_EMPLOYEE:
             return cls._des_from_db_all_employee
+        elif format_des == DES_FOR_ADD_EMPLOYEE:
+            return cls._des_for_add_employee
+        elif format_des == DES_FOR_EDIT_EMPLOYEE:
+            return cls._des_for_edit_employee
+        else:
+            raise TypeError
 
     @staticmethod
     def _des_from_db_all_employee(data):
@@ -22,3 +30,21 @@ class EmployeeDeserializer(BaseDeserializer):
                 specialty=row.get('teacher_specialty'),
             ) for row in data
         ]
+
+    @staticmethod
+    def _des_for_add_employee(req_form):
+        return Employee(
+            login=req_form.get('login'),
+            name=req_form.get('name'),
+            surname=req_form.get('surname'),
+            specialty=req_form.get('specialty'),
+        )
+
+    @staticmethod
+    def _des_for_edit_employee(req_form):
+        return Employee(
+            login=req_form.get('login') if req_form.get('login') else '-1',
+            name=req_form.get('name') if req_form.get('name') else '-1',
+            surname=req_form.get('surname') if req_form.get('surname') else '-1',
+            specialty=req_form.get('specialty') if req_form.get('specialty') else '-1'
+        )
