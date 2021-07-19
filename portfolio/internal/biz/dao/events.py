@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import and_
+from sqlalchemy import and_, insert
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_ACTIVE_EVENTS_ORG, \
@@ -9,6 +9,31 @@ from portfolio.models.events import Events
 
 
 class EventsDao(BaseDao):
+
+    def add(self, event: Events):
+        sql = insert(
+            Events
+        ).values(
+            type=event.type,
+            name=event.name,
+            date_event=event.date_event,
+            hours=event.hours,
+            skill=event.skill,
+            organisation_id=event.organisation_id
+        ).returning(
+            Events._id.label('events_id'),
+            Events._created_at.label('events_created_at'),
+            Events._edited_at.label('events_edited_at')
+        )
+        with self.session() as sess:
+            row = sess.execute(sql).first()
+            sess.commit()
+        if not row:
+            return None, None
+        event.id = row['events_id']
+        event.created_at = row['events_created_at']
+        event.edited_at = row['events_edited_at']
+        return event, None
 
     def get_active_events_by_org_id(self, organisation_id):
         with self.session() as sess:

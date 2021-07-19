@@ -17,3 +17,10 @@ class EventsService:
         if err:
             return None, err
         return event, None
+
+    @staticmethod
+    def add_event(events: Events):
+        event, err = EventsDao().add(events)
+        if err:
+            return None, err
+        return event, None
