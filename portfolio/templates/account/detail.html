@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% if account_main.account_role.id == 1 %}
+    {% include 'navbars/navbar_organisation.html' %}
+{% elif account_main.account_role.id == 2 %}
+    {% include 'navbars/navbar_parent.html' %}
+{% endif %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="row col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+            <h5>Логин: {{ account_main.email }}</h5>
+            <h5>Имя: {{ account_main.name }}</h5>
+            <h5>Роль:{% if account_main.account_role.id == 1 %} Родитель {% elif account_main.account_role.id == 2 %} Организация {% endif %}</h5>
+
+            {% if not account_main.is_confirmed %}
+                <button class="mt-5 bg-info">
+                    Подвердите аккаунт
+                </button>
+            {% else %}
+                <h5 class="mt-5 bg-info d-flex justify-content-center align-items-center" style="width: 250px; border-radius: 20px;">
+                    Аккаунт подтвержден
+                </h5>
+            {% endif %}
+            <button type="button" class="btn btn-info mt-5" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Изменить пароль
+              </button>
+        </div>
+        <div class="row col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+            <img src="../../static/photos/account/icon_account.png">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Добавить ребенка</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('account.edit_password') }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" name="old_password" required placeholder="Старый пароль">
+            <input type="text" class="mt-2 form-control" name="new_password" required placeholder="Новый пароль">
+            <input type="text" class="mt-2 form-control" name="repeat_new_password" required placeholder="Подтвердите новый пароль">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>

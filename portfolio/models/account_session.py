@@ -35,7 +35,7 @@ class AccountSession(AbstractModel):
             {
                 'session_id': self.id,
                 'account_role_id': self.account_main.account_role.id
-            }, SECRET_KEY, algorithm=ENCRYPT_ALGORITHM).decode()
+            }, SECRET_KEY, algorithm=ENCRYPT_ALGORITHM)
 
     @staticmethod
     def get_session_id_from_token(token: str):

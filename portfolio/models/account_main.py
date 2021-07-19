@@ -18,6 +18,9 @@ class AccountMain(AbstractModel):
     _is_confirmed = Column(name="is_confirmed", type_=Boolean, default=False, nullable=False)
     _account_role = relationship("AccountRole")
 
+    def __repr__(self):
+        return f"Account main with id: {self._id}, name: {self._name}"
+
     def __init__(self,
                  id: Optional[int] = None,
                  created_at: Optional[datetime] = None,

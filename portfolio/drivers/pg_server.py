@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 class Pg:
 
     __engine = None
+    __session_db = None
 
     @classmethod
     def get_engine(cls):
@@ -13,6 +14,11 @@ class Pg:
     @classmethod
     def init_db(cls, host: str, user: str, password: str, port: int, db_name: str):
         cls.__engine = create_engine(f'postgresql://{user}:{password}@{host}/{db_name}')
+        cls.__session_db = sessionmaker(bind=cls.__engine)
+
+    @classmethod
+    def get_session_db(cls) -> sessionmaker:
+        return cls.__session_db
 
     @classmethod
     def init_model(cls):

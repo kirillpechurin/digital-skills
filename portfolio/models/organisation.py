@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import UniqueConstraint, Column, Integer, ForeignKey, String, Text
+from sqlalchemy import UniqueConstraint, Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from portfolio.models.abstract_model import AbstractModel
@@ -14,7 +14,7 @@ class Organisation(AbstractModel):
     _name = Column(name="name", type_=String(150), nullable=False, )
     _login = Column(name="login", type_=String(50), nullable=False, unique=True)
     _photo_link = Column(name="photo_link", type_=String(500), nullable=True)
-    _description = Column(name="description", type_=Text(2000), nullable=True)
+    _description = Column(name="description", type_=String(2000), nullable=True)
     UniqueConstraint("name", "login", name="unique_organisation")
     _account_main = relationship("AccountMain")
 

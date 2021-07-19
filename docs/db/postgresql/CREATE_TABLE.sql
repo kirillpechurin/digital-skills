@@ -155,17 +155,17 @@ CREATE TABLE achievements(
     edited_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
     events_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
     name VARCHAR(200),
-    points INTEGER NOT NULL ARRAY,
+    points INTEGER ARRAY NOT NULL,
     nomination VARCHAR(150)
 );
 
 -- -------------------------------------------------------------------------------
 
-DROP SEQUENCE IF EXISTS teacher_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS employee_id_seq CASCADE;
 
 CREATE SEQUENCE employee_id_seq START 1;
 
-DROP TABLE IF EXISTS teacher CASCADE;
+DROP TABLE IF EXISTS employee CASCADE;
 
 CREATE TABLE employee(
     id SMALLINT PRIMARY KEY DEFAULT nextval('employee_id_seq'),
@@ -192,7 +192,7 @@ CREATE TABLE children_organisation(
     edited_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
     organisation_id INTEGER REFERENCES organisation(id) ON DELETE CASCADE,
     children_id INTEGER REFERENCES children(id) ON DELETE CASCADE,
-    CONSTRAINT unique_children UNIQUE(children_id, organisation_id)
+    CONSTRAINT unique_children_organisation UNIQUE(children_id, organisation_id)
 );
 
 -- -----------------------------------------------------------------------------
@@ -231,39 +231,6 @@ CREATE TABLE events_child(
     status BOOLEAN NOT NULL DEFAULT FALSE,
     hours_event INTEGER,
     CONSTRAINT unique_children_events UNIQUE(children_organisation_id, events_id)
-);
-
--- -----------------------------------------------------------------------------
-
-DROP SEQUENCE IF EXISTS teacher_skills_id_seq CASCADE;
-
-CREATE SEQUENCE teacher_skills_id_seq START 1;
-
-DROP TABLE IF EXISTS teacher_skills CASCADE;
-
-CREATE TABLE teacher_skills(
-    id SMALLINT PRIMARY KEY DEFAULT nextval('teacher_skills_id_seq'),
-    created_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
-    edited_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
-    skill_name VARCHAR(150),
-    teacher_id INTEGER REFERENCES teacher(id) ON DELETE CASCADE,
-    CONSTRAINT unique_teacher_skill UNIQUE(skill_name, teacher_id)
-);
-
-
--- -------------------------------------------------------------------------------
-
-DROP SEQUENCE IF EXISTS teacher_session_id_seq CASCADE;
-
-CREATE SEQUENCE teacher_session_id_seq START 1;
-
-DROP TABLE IF EXISTS teacher_session CASCADE;
-
-CREATE TABLE teacher_session(
-    id BIGINT DEFAULT nextval('teacher_session_id_seq') PRIMARY KEY,
-    created_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
-    edited_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
-    teacher_id INTEGER REFERENCES teacher(id) ON DELETE CASCADE
 );
 
 

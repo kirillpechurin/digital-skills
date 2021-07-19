@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for( 'static', filename='css/account/style.css') }}">
+    <title>Digital skills</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <!-- Bootstrap JS + Popper JS -->
+    <script defer src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- JQUERY -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <div class="main-img"><img src="{{ url_for('static', filename='photos/account/main-bg.png') }}" alt="bg"></div>
+            <div class="info">
+                <div class="header-main">
+                    <div class="logo"><img src="{{ url_for('static', filename='photos/account/logo.png') }}" alt="logo" class="img-logo"></div>
+                    <div class="desc-logo">
+                        <a href="index.html"><p class="title">Digital skills</p></a>
+                    <p class="description">Платформа для отслеживания успеваемости ребенка</p>
+                    </div>
+                    
+                </div>
+                <div class="form">
+                    <div class="titles">
+                        <h4 class="login">Регистрация</h4>
+                    <p class="descript-log">личного кабинета</p>
+                    </div>
+                    {% if not context.is_email_sent %}
+                    <select id="role" name="role_id" class="form-select" aria-label="Default select example" onchange="getOption();">
+                        <option selected>Выберите роль</option>
+                        {% for item in context.roles %}
+                            <option id="role_id" name="role_id" value="{{ item.id }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <form id="form_register" action="http://localhost:8000/account/register" method="post" class="forma">
+
+                    </form>
+                    {% if context.is_email_sent %}
+                        <div class="alert alert-primary" role="alert">
+                            Проверьте почту! Вам пришел код подтверждения
+                        </div>
+                        <form action="http://localhost:8000/account/auth/code" method="post" class="forma">
+                            <input name="code" type="text" id="code" required placeholder="Auth Code"><br>
+                        </form>
+                    {% endif %}
+                    <div class="links">
+                        <a href="http://localhost:8000/account/login" class="log">Войти</a>
+                    <a href="http://localhost:8000/account/recovery_password" class="forgot">Забыл пароль?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<script defer src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    </main>
+
+<script>
+function getOption(){
+    const select = document.getElementById("role");
+    var option = select.options[select.selectedIndex].value;
+    var form = document.getElementById('form_register')
+    if (option == 1) {
+         form.innerHTML = "";
+         form.innerHTML = `<input name="name" type="text" id="name"  required placeholder="Имя"><br>
+                           <input name="email" type="email" id="email" required placeholder="Email"><br>
+                           <input name="name_organisation" type="text" id="name_organisation"  required placeholder="Название компании"><br>
+                           <input name="email_organisation" type="text" id="email_organisation"  required placeholder="Корпоративный email"><br>
+                           <input name="password" type="password" id="password" required placeholder="Пароль"><br>
+                           <input name="repeat_password" type="password" id="repeat_password" required placeholder="Подтвердите пароль"><br>
+                           <input onclick="submitDetailsForm();" type="button" value="Зарегистрироваться" class="form-btn">`;
+    }
+    else if (option == 2) {
+        form.innerHTML = "";
+        form.innerHTML = `<input name="name" type="text" id="name"  required placeholder="Имя"><br>
+                          <input name="surname" type="text" id="surname"  required placeholder="Фамилия"><br>
+                          <input name="email" type="email" id="email" required placeholder="Email"><br>
+                          <input name="password" type="password" id="password" required placeholder="Пароль"><br>
+                          <input name="repeat_password" type="password" id="repeat_password" required placeholder="Подтвердите пароль"><br>
+                          <input onclick="submitDetailsForm();" type="button" value="Зарегистрироваться" class="form-btn">`;
+    }
+    else {
+        form.innerHTML = "";
+    }
+}
+</script>
+    <script>
+    function submitDetailsForm() {
+       const select = document.getElementById("role");
+       var option = select.options[select.selectedIndex].value;
+       var form = document.getElementById('form_register');
+       hiddenInput = document.createElement("input");
+       hiddenInput.type = "hidden";
+       hiddenInput.name = "role_id";
+       hiddenInput.value = option;
+       hiddenInput.id = "role_id";
+       form.appendChild(hiddenInput);
+       form.submit();
+    }
+    </script>
+</body>
+</html>

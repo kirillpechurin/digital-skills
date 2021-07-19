@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from sqlalchemy import Column, ForeignKey, String, Integer
+from sqlalchemy import Column, ForeignKey, String, Integer, ARRAY
 from sqlalchemy.orm import relationship
 
 from portfolio.models.abstract_model import AbstractModel
@@ -12,7 +12,7 @@ class Achievements(AbstractModel):
     __tablename__ = "achievements"
     _events_id = Column(ForeignKey("events.id", ondelete="CASCADE", onupdate='CASCADE'), name="events_id", type_=Integer, nullable=False)
     _name = Column(name="name", type_=String(200), nullable=False)
-    _points = Column(name="points", type_=Integer, nullable=False)
+    _points = Column(name="points", type_=ARRAY(Integer), nullable=False)
     _nomination = Column(name="nomination", type_=String(150), nullable=False)
     _events = relationship("Events")
 
