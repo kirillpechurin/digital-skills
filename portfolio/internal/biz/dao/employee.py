@@ -1,7 +1,8 @@
 from sqlalchemy import insert, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FROM_DB_ALL_EMPLOYEE
+from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FROM_DB_ALL_EMPLOYEE, \
+    DES_FROM_DB_DETAIL_EMPLOYEE
 from portfolio.models.employee import Employee
 
 
@@ -59,3 +60,16 @@ class EmployeeDao(BaseDao):
             sess.execute(sql)
             sess.commit()
         return employee_id, None
+
+    def get_by_id(self, employee_id: int):
+        with self.session() as sess:
+            row = sess.query(
+                Employee._id.label('employee_id'),
+                Employee._login.label('employee_login'),
+                Employee._name.label('employee_name'),
+                Employee._surname.label('employee_surname'),
+                Employee._specialty.label('employee_specialty'),
+            ).where(Employee._id == employee_id).first()
+        if not row:
+            return None, None
+        return EmployeeDeserializer.deserialize(row, DES_FROM_DB_DETAIL_EMPLOYEE), None

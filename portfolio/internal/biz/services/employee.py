@@ -31,3 +31,10 @@ class EmployeeService:
         if err:
             return None, err
         return employee, None
+
+    @staticmethod
+    def get_by_employee_id(employee: Employee):
+        employee, err = EmployeeDao().get_by_id(employee.id)
+        if err:
+            return None, err
+        return employee, None

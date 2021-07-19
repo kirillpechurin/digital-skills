@@ -18,21 +18,21 @@ private_office_organisation = Blueprint('organisation/private_office', __name__,
 
 @private_office_organisation.route('/', methods=['GET'])
 @get_org_id_and_acc_id_with_confirmed_email
-def main_page(auth_account_main_id: int):
+def main_page(auth_account_main_id: int, organisation_id: int):
     if request.method == 'GET':
-        organisation = Organisation(account_main=AccountMain(id=auth_account_main_id))
+        organisation = Organisation(id=organisation_id)
 
-        info_organisation, err = OrganisationService.get_by_account_id(organisation.account_main.id)
+        info_organisation, err = OrganisationService.get_by_id(organisation.id)
         if err:
             return json.dumps(err)
 
-        list_teacher, err = EmployeeService.get_list_employee_by_org_id(info_organisation.id)
+        list_employee, err = EmployeeService.get_list_employee_by_org_id(organisation.id)
         if err:
             return json.dumps(err)
         response = make_response(render_template(
             'organisation/index.html',
             info_organisation=info_organisation,
-            list_teacher=list_teacher
+            list_employee=list_employee
         ))
         return response
 
@@ -53,7 +53,7 @@ def add_employee(auth_account_main_id: int, organisation_id: int):
         teacher, err = EmployeeService.add_employee(teacher)
         if err:
             return json.dumps(err)
-        flash('Учитель успешно добавлен!')
+        flash('Сотрудник успешно добавлен!')
         response = make_response(
             redirect(url_for('organisation/private_office.main_page'))
         )
@@ -76,7 +76,7 @@ def edit_employee(auth_account_main_id: int, organisation_id: int, employee_id: 
         teacher, err = EmployeeService.update_employee(employee)
         if err:
             return json.dumps(err)
-        flash('Учитель успешно обновлен!')
+        flash('Сотрудник успешно обновлен!')
         response = make_response(
             redirect(url_for('organisation/private_office.main_page'))
         )
@@ -98,3 +98,26 @@ def delete_employee(auth_account_main_id: int, organisation_id: int, employee_id
             ))
         )
         return resp
+
+
+@private_office_organisation.route('/detail_employee/<int:employee_id>', methods=['GET', 'POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_detail_employee(auth_account_main_id: int, organisation_id: int, employee_id: int):
+    if request.method == "GET":
+        organisation = Organisation(id=organisation_id)
+
+        info_organisation, err = OrganisationService.get_by_id(organisation.id)
+        if err:
+            return json.dumps(err)
+
+        employee = Employee(id=employee_id)
+        employee, err = EmployeeService.get_by_employee_id(employee)
+        if err:
+            return json.dumps(err)
+        response = make_response(
+            render_template(
+                'organisation/detail_teacher.html',
+                employee=employee
+            )
+        )
+        return response
