@@ -9,6 +9,7 @@ from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.organisation import OrganisationService
+from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
 from portfolio.internal.biz.validators.events import AddEventSchema
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
@@ -16,6 +17,7 @@ from portfolio.models.account_main import AccountMain
 from portfolio.models.employee import Employee
 from portfolio.models.events import Events
 from portfolio.models.organisation import Organisation
+from portfolio.models.request_to_organisation import RequestToOrganisation
 
 private_office_organisation = Blueprint('organisation/private_office', __name__, template_folder='templates/organisation/private_office', static_folder='static/organisation/private_office')
 
@@ -146,5 +148,28 @@ def add_event(auth_account_main_id: int, organisation_id: int):
         flash('Событие успешно добавлено')
         resp = make_response(
             redirect(url_for('organisation/private_office.get_list_events'))
+        )
+        return resp
+
+
+@private_office_organisation.route('/requests', methods=['POST', 'GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_requests(auth_account_main_id: int, organisation_id: int):
+    if request.method == 'GET':
+        request_to_organisation = RequestToOrganisation(
+            events=Events(
+                organisation=Organisation(
+                    id=organisation_id
+                )
+            )
+        )
+        list_request_to_organisation, err = RequestToOrganisationService.get_all_requests_by_org_id(request_to_organisation)
+        if err:
+            return json.dumps(err)
+        resp = make_response(
+            render_template(
+                'organisation/requests.html',
+                list_request=list_request_to_organisation
+            )
         )
         return resp

@@ -6,6 +6,7 @@ from portfolio.models.events import Events
 DES_FROM_DB_GET_DETAIL_EVENT = "des-from-db-get-detail-event"
 DES_FROM_DB_ACTIVE_EVENTS_ORG = 'des-from-db-all-events-org'
 DES_FOR_ADD_EVENT = 'des-for-add-event'
+DES_FROM_DB_INFO_EVENTS = 'des-from-db-info-events'
 
 
 class EventsDeserializer(BaseDeserializer):
@@ -18,6 +19,8 @@ class EventsDeserializer(BaseDeserializer):
             return cls._des_from_db_active_events_org
         elif format_des == DES_FOR_ADD_EVENT:
             return cls._des_for_add_event
+        elif format_des == DES_FROM_DB_INFO_EVENTS:
+            return cls._des_from_db_info_events
 
     @staticmethod
     def _des_for_add_event(req_form) -> Events:
@@ -53,3 +56,11 @@ class EventsDeserializer(BaseDeserializer):
             )
             for row in data
         ]
+
+    @staticmethod
+    def _des_from_db_info_events(row) -> Events:
+        return Events(
+            id=row.get('events_id'),
+            name=row.get('events_name'),
+            date_event=row.get('events_date_event'),
+        )
