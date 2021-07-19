@@ -1,6 +1,7 @@
 from sqlalchemy import insert
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
+from portfolio.internal.biz.deserializers.organisation import OrganisationDeserializer, DES_FROM_DB_ALL_ORGANISATIONS
 from portfolio.models.organisation import Organisation
 
 
@@ -30,3 +31,16 @@ class OrganisationDao(BaseDao):
         organisation.created_at = row['organisation_created_at']
         organisation.edited_at = row['organisation_edited_at']
         return organisation, None
+
+    def get_all(self):
+        with self.session() as sess:
+            data = sess.query(
+                Organisation._id.label('organisation_id'),
+                Organisation._name.label('organisation_name'),
+                Organisation._login.label('organisation_login'),
+                Organisation._photo_link.label('organisation_photo_link'),
+                Organisation._description.label('organisation_description'),
+            ).all()
+        if not data:
+            return None, None
+        return OrganisationDeserializer.deserialize(data, DES_FROM_DB_ALL_ORGANISATIONS), None
