@@ -2,7 +2,7 @@ import hashlib
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, String, ForeignKey, Boolean
+from sqlalchemy import Column, String, ForeignKey, Boolean, Integer
 from sqlalchemy.orm import relationship
 
 from portfolio.models.abstract_model import AbstractModel
@@ -14,7 +14,7 @@ class AccountMain(AbstractModel):
     _email = Column(name="email", type_=String(100), unique=True, nullable=False)
     _name = Column(name="name", type_=String(100), nullable=False)
     _hash_password = Column(name="hash_password", type_=String(300), nullable=False)
-    _account_role_id = Column(ForeignKey("account_role.id"), name="account_role_id", nullable=False)
+    _account_role_id = Column(ForeignKey("account_role.id"), type_=Integer, name="account_role_id", nullable=False)
     _is_confirmed = Column(name="is_confirmed", type_=Boolean, default=False, nullable=False)
     _account_role = relationship("AccountRole")
 

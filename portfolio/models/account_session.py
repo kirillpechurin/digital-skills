@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import jwt
-from sqlalchemy import ForeignKey, Column
+from sqlalchemy import ForeignKey, Column, Integer
 from sqlalchemy.orm import relationship
 
 from portfolio.configs.internal import SECRET_KEY, ENCRYPT_ALGORITHM
@@ -11,7 +11,7 @@ from portfolio.models.account_main import AccountMain
 
 class AccountSession(AbstractModel):
     __tablename__ = "account_session"
-    _account_main_id = Column(ForeignKey("account_main.id"), name="account_main_id", nullable=False)
+    _account_main_id = Column(ForeignKey("account_main.id", onupdate="CASCADE", ondelete="CASCADE"), type_=Integer, name="account_main_id", nullable=False)
     _account_main = relationship("AccountMain")
 
     def __init__(self,

@@ -163,12 +163,12 @@ CREATE TABLE achievements(
 
 DROP SEQUENCE IF EXISTS teacher_id_seq CASCADE;
 
-CREATE SEQUENCE teacher_id_seq START 1;
+CREATE SEQUENCE employee_id_seq START 1;
 
 DROP TABLE IF EXISTS teacher CASCADE;
 
-CREATE TABLE teacher(
-    id SMALLINT PRIMARY KEY DEFAULT nextval('teacher_id_seq'),
+CREATE TABLE employee(
+    id SMALLINT PRIMARY KEY DEFAULT nextval('employee_id_seq'),
     created_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
     edited_at TIMESTAMP with time zone NOT NULL DEFAULT current_timestamp,
     login VARCHAR(150) NOT NULL UNIQUE,

@@ -16,6 +16,21 @@ class Pg:
 
     @classmethod
     def init_model(cls):
-        from portfolio.models import abstract_model, account_main, account_role
-        from portfolio.models.abstract_model import Base
-        Base.metadata.create_all(cls.__engine)
+        import portfolio.models.abstract_model as abc_model
+        base = abc_model.Base
+        from portfolio.models import \
+            account_main, \
+            account_role, \
+            account_session, \
+            achievements, \
+            achievements_child, \
+            auth_code, \
+            children, \
+            children_organisation, \
+            events, \
+            events_child, \
+            organisation, \
+            parents, \
+            employee, \
+            request_to_organisation
+        base.metadata.create_all(cls.__engine)
