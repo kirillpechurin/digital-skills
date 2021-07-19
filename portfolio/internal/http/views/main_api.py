@@ -5,11 +5,14 @@ from portfolio.internal.biz.services.children import ChildrenService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.organisation import OrganisationService
+from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
 from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
 from portfolio.models.children import Children
 from portfolio.models.events import Events
+from portfolio.models.organisation import Organisation
 from portfolio.models.parents import Parents
+from portfolio.models.request_to_organisation import RequestToOrganisation
 
 main = Blueprint('main', __name__, template_folder='templates/main', static_folder='static/main')
 
@@ -75,5 +78,33 @@ def detail_event(auth_account_main_id: int, parent_id: int, organisation_id: int
                 list_children=list_children,
                 organisation_id=organisation_id
             )
+        )
+        return resp
+
+
+@main.route('/organisations/<int:organisation_id>/events/<int:events_id>/make_request', methods=['POST'])
+@get_parent_id_and_acc_id_with_confirmed_email
+def make_request(auth_account_main_id: int, organisation_id, events_id, parent_id: int):
+    if request.method == 'POST':
+        children_id = int(request.form.get('child_id'))
+        if not children_id:
+            return flash('Выберите ребенка, которого нужно зарегистрировать на это событие')
+        request_to_organisation = RequestToOrganisation(
+            parents=Parents(id=parent_id),
+            events=Events(id=events_id,
+                          organisation=Organisation(id=organisation_id)),
+            children=Children(id=children_id)
+        )
+        request_to_organisation, err = RequestToOrganisationService.make_request(request_to_organisation)
+        if err:
+            flash(err)
+            resp = make_response(
+                redirect(url_for('main.detail_event', events_id=events_id, organisation_id=organisation_id))
+            )
+            return resp
+
+        flash('Успешно зарегистрировали заявку, ждите ответа от организации!')
+        resp = make_response(
+            redirect(url_for('main.detail_event', events_id=events_id, organisation_id=organisation_id))
         )
         return resp
