@@ -1,11 +1,12 @@
 import json
 
-from flask import Blueprint, request, flash, make_response, url_for
+from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
 from portfolio.internal.biz.services.employee import EmployeeService
+from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
@@ -13,6 +14,27 @@ from portfolio.models.employee import Employee
 from portfolio.models.organisation import Organisation
 
 private_office_organisation = Blueprint('organisation/private_office', __name__, template_folder='templates/organisation/private_office', static_folder='static/organisation/private_office')
+
+
+@private_office_organisation.route('/', methods=['GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def main_page(auth_account_main_id: int):
+    if request.method == 'GET':
+        organisation = Organisation(account_main=AccountMain(id=auth_account_main_id))
+
+        info_organisation, err = OrganisationService.get_by_account_id(organisation.account_main.id)
+        if err:
+            return json.dumps(err)
+
+        list_teacher, err = EmployeeService.get_list_employee_by_org_id(info_organisation.id)
+        if err:
+            return json.dumps(err)
+        response = make_response(render_template(
+            'organisation/index.html',
+            info_organisation=info_organisation,
+            list_teacher=list_teacher
+        ))
+        return response
 
 
 @private_office_organisation.route('/add_employee', methods=['POST', 'GET'])
