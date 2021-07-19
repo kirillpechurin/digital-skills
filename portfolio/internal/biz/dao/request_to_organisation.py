@@ -1,4 +1,4 @@
-from sqlalchemy import insert, and_
+from sqlalchemy import insert, and_, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.request_to_organisation import RequestToOrganisationDeserializer, \
@@ -97,3 +97,16 @@ class RequestToOrganisationDao(BaseDao):
         if not row:
             return None, None
         return RequestToOrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_REQUEST), None
+
+    def remove_by_id(self, request_id: int):
+        sql = delete(
+            RequestToOrganisation
+        ).where(
+            RequestToOrganisation._id == request_id
+        ).returning(
+            RequestToOrganisation._id.label('request_to_organisation_id')
+        )
+        with self.session as sess:
+            row = sess.execute(sql).first()
+            sess.commit()
+        return RequestToOrganisation(id=row['id']), None

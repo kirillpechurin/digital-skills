@@ -25,3 +25,10 @@ class RequestToOrganisationService:
         if err:
             return None, err
         return request_to_organisation, None
+
+    @staticmethod
+    def delete_request(request_to_organisation: RequestToOrganisation):
+        request_to_organisation, err = RequestToOrganisationDao().remove_by_id(request_to_organisation.id)
+        if err:
+            return None, err
+        return request_to_organisation, None
