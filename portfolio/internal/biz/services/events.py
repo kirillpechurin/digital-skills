@@ -1,4 +1,5 @@
 from portfolio.internal.biz.dao.events import EventsDao
+from portfolio.models.events import Events
 
 
 class EventsService:
@@ -9,3 +10,10 @@ class EventsService:
         if err:
             return None, err
         return events, None
+
+    @staticmethod
+    def get_by_events_id(events: Events):
+        event, err = EventsDao().get_by_id(events.id)
+        if err:
+            return None, err
+        return event, None

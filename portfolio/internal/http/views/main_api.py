@@ -1,10 +1,15 @@
 
 from flask import Blueprint, request, json, url_for, redirect, make_response, render_template, flash
 
+from portfolio.internal.biz.services.children import ChildrenService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
+from portfolio.models.account_main import AccountMain
+from portfolio.models.children import Children
+from portfolio.models.events import Events
+from portfolio.models.parents import Parents
 
 main = Blueprint('main', __name__, template_folder='templates/main', static_folder='static/main')
 
@@ -46,3 +51,29 @@ def detail_organisation(auth_account_main_id: int, parent_id: int, organisation_
         )
         return resp
 
+
+@main.route('/organisations/<int:organisation_id>/events/<int:events_id>', methods=['GET'])
+@get_parent_id_and_acc_id_with_confirmed_email
+def detail_event(auth_account_main_id: int, parent_id: int, organisation_id: int, events_id: int):
+    if request.method == 'GET':
+        events = Events(id=events_id)
+        event, err = EventsService.get_by_events_id(events)
+        if err:
+            return json.dumps(err)
+        children = Children(
+            parents=Parents(
+                id=parent_id,
+            )
+        )
+        list_children, err = ChildrenService.get_children_by_parents_id(children)
+        if err:
+            return json.dumps(err)
+        resp = make_response(
+            render_template(
+                'main/detail_event.html',
+                event=event,
+                list_children=list_children,
+                organisation_id=organisation_id
+            )
+        )
+        return resp
