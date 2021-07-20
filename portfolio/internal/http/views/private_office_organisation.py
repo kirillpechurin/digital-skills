@@ -6,6 +6,7 @@ from werkzeug.utils import redirect
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT
+from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.organisation import OrganisationService
@@ -238,3 +239,23 @@ def approve_req(auth_account_main_id: int, organisation_id: int, request_id: int
             redirect(url_for('organisation/private_office.get_requests'))
         )
         return resp
+
+
+@private_office_organisation.route('/learners', methods=['GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_list_learners(auth_account_main_id: int, organisation_id: int):
+    if request.method == 'GET':
+        list_learners, err = ChildrenOrganisationService.get_list_children_by_org_id(organisation_id)
+        print(list_learners)
+        if err:
+            return json.dumps(err)
+        resp = make_response(
+            render_template(
+                'organisation/pupils.html',
+                list_learners=list_learners,
+                count_learners=len(list_learners) if list_learners else 0,
+            )
+        )
+        return resp
+
+

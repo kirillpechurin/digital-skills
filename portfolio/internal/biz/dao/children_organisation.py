@@ -1,6 +1,8 @@
 from sqlalchemy import insert, and_
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
+from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
+    DES_FROM_DB_LIST_LEARNERS
 from portfolio.models.children import Children
 from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.organisation import Organisation
@@ -61,3 +63,20 @@ class ChildrenOrganisationDao(BaseDao):
             return None, 'get_by_org_and_child_id'
         children_organisation.id = row['children_organisation_id']
         return children_organisation, None
+
+    def get_children_by_organisation_id(self, organisation_id: int):
+        with self.session() as sess:
+            data = sess.query(
+                ChildrenOrganisation._id.label('children_organisation_id'),
+                Children._id.label('children_id'),
+                Children._name.label('children_name'),
+                Children._surname.label('children_surname'),
+                Children._date_born.label('children_date_born'),
+            ).join(
+                ChildrenOrganisation._children
+            ).where(
+                ChildrenOrganisation._organisation_id == organisation_id
+            ).all()
+        if not data:
+            return None, None
+        return ChildrenOrganisationDeserializer.deserialize(data, DES_FROM_DB_LIST_LEARNERS), None
