@@ -19,38 +19,29 @@
     <div class="row">
         <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
         </div>
-        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
-          Выберите ребенка
+        <div class="row col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+            Выберите ребенка
+            {% if list_children %}
+                {% for child in list_children %}
+                        <hr class="mt-5">
+                        <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                            <h5>{{ child.name }} {{ child.surname }}</h5>
+                            <h5>{{ child.date_born }}</h5>
+                        </div>
+                        <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6 d-flex flex-row-reverse mb-3 align-items-center">
+                            <a class="btn btn-info" href="{{ url_for('parents/private_office.progress', children_id=child.id) }}">
+                                Выбрать
+                            </a>
+                        </div>
+                        <hr>
+                {% endfor %}
+            {% endif %}
         </div>
         <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5 d-flex flex-row-reverse">
-            [IMG]
+            <img src="{{ url_for('static', filename='photos/parents/icon_children.png') }}">
         </div>
         <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
         </div>
-    </div>
-    <div class="row">
-        {% if list_children %}
-      {% for child in list_children %}
-
-      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
-        </div>
-      <div class="row col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6">
-        <hr class="mt-5">
-        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
-            <h5>{{ child.name }} {{ child.surname }}</h5>
-            <h5>{{ child.date_born }}</h5>
-        </div>
-        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
-          <a class="btn btn-info" href="{{ url_for('parents/private_office.progress', children_id=child.id) }}">Выбрать</a>
-        </div>
-        <hr>
-      </div>
-      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
-        </div>
-      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
-        </div>
-      {% endfor %}
-        {% endif %}
     </div>
 </div>
 </body>

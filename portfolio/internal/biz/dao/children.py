@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import psycopg2
 import sqlalchemy
 from sqlalchemy import insert
@@ -71,8 +73,11 @@ class ChildrenDao(BaseDao):
     def update(self, children_id: int, children: Children):
         with self.session() as sess:
             children_db = sess.query(Children).where(Children._id == children_id).first()
-            for column in children_db:
-                if not getattr(children, f"{column}") == '-1':
-                    children_db[f'{column}'] = getattr(children, f"{column}")
+            created_at = children_db._created_at
+            for column in children_db.__dict__:
+                if getattr(children, f"{column[1:]}", '-1') != '-1':
+                    setattr(children_db, f"{column}", getattr(children, f"{column[1:]}"))
+            setattr(children_db, '_edited_at', datetime.utcnow())
+            setattr(children_db, '_created_at', created_at)
             sess.commit()
-        return children
+        return children, None
