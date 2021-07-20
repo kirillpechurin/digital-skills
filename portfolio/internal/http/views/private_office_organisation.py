@@ -403,3 +403,28 @@ def get_list_events(auth_account_main_id: int, organisation_id: int):
             )
         )
         return response
+
+
+@private_office_organisation.route('events/<int:events_id>', methods=['GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def detail_event(auth_account_main_id: int, organisation_id: int, events_id: int):
+    if request.method == 'GET':
+        events = Events(id=events_id)
+        event, err = EventsService.get_by_events_id(events)
+        if err:
+            return json.dumps(err)
+
+        achievements = Achievements(events=event)
+        list_achievements, err = AchievementsService.get_by_events_id(achievements)
+        if err:
+            return json.dumps(err)
+
+        resp = make_response(
+            render_template(
+                'organisation/detail_event.html',
+                event=event,
+                list_achievements=list_achievements
+            ),
+        )
+        return resp
+    

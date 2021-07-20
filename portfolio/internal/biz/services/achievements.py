@@ -14,3 +14,10 @@ class AchievementsService:
         if err:
             return None, err
         return achievements, None
+
+    @staticmethod
+    def get_by_events_id(achievements: Achievements):
+        list_achievement, err = AchievementsDao().get_by_events_id(achievements.events.id)
+        if err:
+            return None, err
+        return list_achievement, None

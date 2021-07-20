@@ -3,6 +3,7 @@ from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_
 from portfolio.models.achievements import Achievements
 
 DES_FROM_DB_GET_INFO_ACHIEVEMENTS = 'des-from-db-get-info-achievements'
+DES_FROM_DB_ALL_ACHIEVEMENTS = 'des-from-db-all-achievements'
 DES_FROM_DB_DETAIL_ACHIEVEMENTS = 'des-from-db-detail-achievements'
 
 
@@ -12,6 +13,8 @@ class AchievementsDeserializer(BaseDeserializer):
     def _get_deserializer(cls, format_des: str):
         if format_des == DES_FROM_DB_GET_INFO_ACHIEVEMENTS:
             return cls._des_from_db_get_info_achievements
+        elif format_des == DES_FROM_DB_ALL_ACHIEVEMENTS:
+            return cls._des_from_db_all_achievements
         elif format_des == DES_FROM_DB_DETAIL_ACHIEVEMENTS:
             return cls._des_from_db_detail_achievements
         else:
@@ -28,7 +31,7 @@ class AchievementsDeserializer(BaseDeserializer):
         )
 
     @staticmethod
-    def _des_from_db_detail_achievements(data):
+    def _des_from_db_all_achievements(data):
         return [
             Achievements(
                 id=row.get('achievements_id'),
@@ -38,3 +41,12 @@ class AchievementsDeserializer(BaseDeserializer):
             )
             for row in data
         ]
+
+    @staticmethod
+    def _des_from_db_detail_achievements(row):
+        return Achievements(
+            id=row.get('achievements_id'),
+            name=row.get('achievements_name'),
+            points=row.get('achievements_points'),
+            nomination=row.get('achievements_nomination')
+        )
