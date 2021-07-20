@@ -5,6 +5,7 @@ from portfolio.models.parents import Parents
 DES_FROM_DB_INFO_CHILDREN = 'des-from-db-info-children'
 DES_FROM_DB_INFO_CHILD = 'des-from-db-info-child'
 DES_FOR_ADD_CHILD = 'des-for-add-child'
+DES_FOR_EDIT_CHILD = 'des-for-edit-child'
 
 class ChildrenDeserialize(BaseDeserializer):
 
@@ -16,6 +17,8 @@ class ChildrenDeserialize(BaseDeserializer):
             return cls._des_from_db_info_child
         elif format_des == DES_FOR_ADD_CHILD:
             return cls._des_for_add_child
+        elif format_des == DES_FOR_EDIT_CHILD:
+            return cls._des_for_edit_child
         else:
             raise TypeError
 
@@ -49,4 +52,12 @@ class ChildrenDeserialize(BaseDeserializer):
             name=child_dict.get('name'),
             surname=child_dict.get('surname'),
             date_born=child_dict.get('date_born')
+        )
+
+    @staticmethod
+    def _des_for_edit_child(child_dict) -> Children:
+        return Children(
+            name=child_dict.get('name') if child_dict.get('name') else '-1',
+            surname=child_dict.get('surname') if child_dict.get('surname') else '-1',
+            date_born=child_dict.get('date_born') if child_dict.get('date_born') else '-1'
         )
