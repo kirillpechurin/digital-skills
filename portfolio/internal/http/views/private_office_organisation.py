@@ -310,3 +310,21 @@ def update_status_event_for_child(children_org_id: int, auth_account_main_id: in
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
         return resp
+
+
+@private_office_organisation.route('/learners/<int:children_org_id>/<int:events_id>/update_complete_event', methods=['POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def update_complete_event_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, events_id: int):
+    if request.method == "POST":
+        count_hours = request.form.get('hours')
+        events_child = EventsChild(children_organisation=ChildrenOrganisation(id=children_org_id),
+                                   events=Events(id=events_id,
+                                                 hours=count_hours))
+        events_child, err = EventsChildService.update_hours(events_child)
+        if err:
+            return None, err
+        flash('Успешно обнолено!')
+        resp = make_response(
+            redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
+        )
+        return resp

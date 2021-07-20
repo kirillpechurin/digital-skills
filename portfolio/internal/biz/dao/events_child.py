@@ -162,3 +162,17 @@ class EventsChildDao(BaseDao):
             events_child_db._status = events_child.status
             sess.commit()
         return events_child, None
+
+    def update_hours(self, events_child: EventsChild):
+        with self.session() as sess:
+            events_child_db = sess.query(
+                EventsChild
+            ).where(
+                and_(
+                    EventsChild._children_organisation_id == events_child.children_organisation.id,
+                    EventsChild._events_id == events_child.events.id
+                )
+            )
+            events_child_db._hours_event = events_child.hours_event
+            sess.commit()
+        return events_child, None

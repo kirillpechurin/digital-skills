@@ -48,3 +48,10 @@ class EventsChildService:
         if err:
             return None, err
         return events_child, None
+
+    @staticmethod
+    def update_hours(events_child: EventsChild):
+        events_child, err = EventsChildDao().update_hours(events_child)
+        if err:
+            return None, err
+        return events_child, None
