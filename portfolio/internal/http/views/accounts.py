@@ -2,7 +2,6 @@ import json
 from typing import List
 
 from flask import Blueprint, request, make_response, render_template, url_for, session, flash
-from sqlalchemy import select
 from werkzeug.utils import redirect
 
 from portfolio.internal.biz.deserializers.account_main import DES_FROM_REGISTER, AccountMainDeserializer, DES_FROM_LOGIN

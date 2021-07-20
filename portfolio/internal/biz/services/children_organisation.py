@@ -20,3 +20,10 @@ class ChildrenOrganisationService:
         if err:
             return None, err
         return list_learners, None
+
+    @staticmethod
+    def get_children_by_children_org_id(children_organisation: ChildrenOrganisation):
+        children_org, err = ChildrenOrganisationDao().get_children_by_children_org_id(children_organisation.id)
+        if err:
+            return None, err
+        return children_org, None

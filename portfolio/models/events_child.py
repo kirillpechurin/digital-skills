@@ -24,12 +24,22 @@ class EventsChild(AbstractModel):
                  created_at: Optional[datetime] = None,
                  edited_at: Optional[datetime] = None,
                  events: Optional[Events] = None,
+                 hours_event: Optional[int] = None,
                  children_organisation: Optional[ChildrenOrganisation] = None,
                  status: Optional[bool] = None) -> None:
         super().__init__(id=id, created_at=created_at, edited_at=edited_at)
         self.__events = events
+        self.__hours_event = hours_event
         self.__children_organisation = children_organisation
         self.__status = status
+
+    @property
+    def hours_event(self) -> int:
+        return self.__hours_event
+
+    @hours_event.setter
+    def hours_event(self, value):
+        self.__hours_event = value
 
     @property
     def events(self) -> Events:

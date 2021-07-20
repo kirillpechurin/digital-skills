@@ -16,3 +16,10 @@ class OrganisationService:
         if err:
             return None, err
         return organisation, None
+
+    @staticmethod
+    def get_by_account_id(account_main_id: int):
+        organisation, err = OrganisationDao().get_by_account_id(account_main_id)
+        if err:
+            return None, err
+        return organisation, None

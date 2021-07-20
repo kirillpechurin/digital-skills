@@ -3,6 +3,7 @@ from sqlalchemy import insert
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.organisation import OrganisationDeserializer, DES_FROM_DB_ALL_ORGANISATIONS, \
     DES_FROM_DB_DETAIL_ORGANISATION
+from portfolio.models.account_main import AccountMain
 from portfolio.models.organisation import Organisation
 
 
@@ -58,3 +59,29 @@ class OrganisationDao(BaseDao):
         if not row:
             return None, None
         return OrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_ORGANISATION), None
+
+    def get_by_account_id(self, account_main_id: int):
+        with self.session() as sess:
+            row = sess.query(
+                Organisation._id.label('organisation_id'),
+                Organisation._created_at.label('organisation_created_at'),
+                Organisation._name.label('organisation_name'),
+                Organisation._photo_link.label('organisation_photo_link'),
+                Organisation._description.label('organisation_description'),
+                Organisation._login.label('organisation_login'),
+                Organisation._account_main_id.label('organisation_account_main_id'),
+            ).where(
+                Organisation._account_main_id == account_main_id
+            ).first()
+        if not row:
+            return None, None
+        organisation = Organisation(
+            id=row['organisation_id'],
+            created_at=row['organisation_created_at'],
+            name=row['organisation_name'],
+            photo_link=row['organisation_photo_link'],
+            description=row['organisation_description'],
+            login=row['organisation_login'],
+            account_main=AccountMain(id=row['organisation_account_main_id'])
+        )
+        return organisation, None
