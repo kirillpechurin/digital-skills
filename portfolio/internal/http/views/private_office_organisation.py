@@ -3,20 +3,26 @@ import json
 from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
+from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT
+from portfolio.internal.biz.services.achievements import AchievementsService
 from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
+from portfolio.internal.biz.services.events_child import EventsChildService
 from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
+from portfolio.internal.biz.validators.children import AddChildrenSchema
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
 from portfolio.internal.biz.validators.events import AddEventSchema
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
+from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.employee import Employee
 from portfolio.models.events import Events
+from portfolio.models.events_child import EventsChild
 from portfolio.models.organisation import Organisation
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
@@ -259,3 +265,48 @@ def get_list_learners(auth_account_main_id: int, organisation_id: int):
         return resp
 
 
+@private_office_organisation.route('/learners/<int:children_org_id>', methods=['GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_detail_children(children_org_id: int, auth_account_main_id: int, organisation_id: int):
+    if request.method == 'GET':
+        children_organisation = ChildrenOrganisation(id=children_org_id)
+        activity_child, err = EventsChildService.get_by_children_organisation_id(children_organisation)
+        if err:
+            return json.dumps(err)
+        children_org, err = ChildrenOrganisationService.get_children_by_children_org_id(children_organisation)
+        if err:
+            return json.dumps(err)
+        list_achievements_for_completed_events, err = AchievementsService.get_all_by_completed_events_id(activity_child.list_completed_events)
+        if err:
+            return json.dumps(err)
+        resp = make_response(
+            render_template(
+                'organisation/learner.html',
+                count_complete_events=len(activity_child.list_completed_events) if activity_child.list_completed_events else 0,
+                count_active_events=len(activity_child.list_active_events) if activity_child.list_active_events else 0,
+                sum_hours=sum([completed_event.events.hours for completed_event in activity_child.list_completed_events]) if activity_child.list_completed_events else 0,
+                activity_child=activity_child,
+                list_achievements_for_completed_events=list_achievements_for_completed_events,
+                children_org=children_org
+            )
+        )
+        return resp
+
+
+@private_office_organisation.route('/learners/<int:children_org_id>/<int:events_id>/update_status', methods=['POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def update_status_event_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, events_id: int):
+    if request.method == 'POST':
+        events_child = EventsChild(
+            events=Events(id=events_id),
+            children_organisation=ChildrenOrganisation(id=children_org_id),
+            status=request.form.get('status_event')
+        )
+        events_child, err = EventsChildService.update_status(events_child)
+        if err:
+            return None, err
+        flash("Успешно обновлено!")
+        resp = make_response(
+            redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
+        )
+        return resp
