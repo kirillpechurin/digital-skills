@@ -387,3 +387,19 @@ def delete_achievement_for_child(children_org_id: int, auth_account_main_id: int
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
         return resp
+
+
+@private_office_organisation.route('/events', methods=['GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def get_list_events(auth_account_main_id: int, organisation_id: int):
+    if request.method == 'GET':
+        list_events, err = EventsService.get_all_events_by_organisation_id(organisation_id)
+        if err:
+            return json.dumps(err)
+        response = make_response(
+            render_template(
+                'organisation/events.html',
+                list_events=list_events
+            )
+        )
+        return response
