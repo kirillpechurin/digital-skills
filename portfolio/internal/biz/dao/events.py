@@ -9,6 +9,15 @@ from portfolio.models.events import Events
 
 class EventsDao(BaseDao):
 
+    def update(self, event_id: int, event: Events):
+        with self.session() as sess:
+            events_db = sess.query(Events).where(Events._id == event_id).first()
+            for column in events_db:
+                if not getattr(event, f"{column}") == '-1':
+                    events_db[f'{column}'] = getattr(event, f"{column}")
+            sess.commit()
+        return event
+
     def add(self, event: Events):
         sql = insert(
             Events

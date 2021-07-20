@@ -6,7 +6,7 @@ from werkzeug.utils import redirect
 from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT
+from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT, DES_FOR_EDIT_EVENT
 from portfolio.internal.biz.services.achievements import AchievementsService
 from portfolio.internal.biz.services.achievements_child import AchievementsChildService
 from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
@@ -17,7 +17,7 @@ from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
 from portfolio.internal.biz.validators.children import AddChildrenSchema
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
-from portfolio.internal.biz.validators.events import AddEventSchema
+from portfolio.internal.biz.validators.events import AddEventSchema, EditEventSchema
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
 from portfolio.models.achievements import Achievements
@@ -427,4 +427,27 @@ def detail_event(auth_account_main_id: int, organisation_id: int, events_id: int
             ),
         )
         return resp
-    
+
+
+@private_office_organisation.route('events/<int:events_id>/edit_event', methods=["POST"])
+@get_org_id_and_acc_id_with_confirmed_email
+def edit_event(auth_account_main_id: int, organisation_id: int, events_id: int):
+    if request.method == 'POST':
+        errors = EditEventSchema().validate(dict(type=request.form.get('type'),
+                                                 name=request.form.get('name'),
+                                                 date_event=request.form.get('date_event'),
+                                                 hours=request.form.get('event_hours'),
+                                                 skill=request.form.get('skill')))
+        if errors:
+            return json.dumps(errors)
+        print(request.form)
+        event = EventsDeserializer.deserialize(request.form, DES_FOR_EDIT_EVENT)
+        event.id = events_id
+        event, err = EventsService.update_event(event)
+        if err:
+            return json.dumps(err)
+        flash('Успешно обнолено!')
+        resp = make_response(
+            redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
+        )
+        return resp

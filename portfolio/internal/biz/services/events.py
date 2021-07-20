@@ -5,6 +5,13 @@ from portfolio.models.events import Events
 class EventsService:
 
     @staticmethod
+    def update_event(event: Events):
+        event, err = EventsDao().update(event.id, event)
+        if err:
+            return None, err
+        return event, None
+
+    @staticmethod
     def get_active_events_by_organisation_id(organisation_id: int):
         events, err = EventsDao().get_active_events_by_org_id(organisation_id)
         if err:
