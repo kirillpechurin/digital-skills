@@ -1,6 +1,9 @@
+from datetime import date
+
 from sqlalchemy import and_, insert
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
+from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_EVENTS_ORG
 from portfolio.internal.biz.deserializers.events_child import DES_FROM_DB_GET_EVENTS, EventsChildDeserializer, \
     DES_FROM_DB_GET_EVENTS, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION
 from portfolio.models.children import Children
@@ -220,3 +223,24 @@ class EventsChildDao(BaseDao):
             events_child_db._hours_event = events_child.hours_event
             sess.commit()
         return events_child, None
+
+    def get_events_by_date(self, children_id: int, calendar_date: date):
+        with self.session() as sess:
+            data = sess.query(
+                Events._id.label('events_id'),
+                Events._type.label('events_type'),
+                Events._name.label('events_name'),
+                Events._date_event.label('events_date_event'),
+                Events._skill.label('events_skill'),
+            ).join(
+                EventsChild._events
+            ).join(
+                EventsChild._children_organisation
+            ).where(
+                and_(
+                    Events._date_event == calendar_date,
+                    ChildrenOrganisation._children_id == children_id
+                )
+            ).all()
+        data = [dict(row) for row in data]
+        return EventsDeserializer.deserialize(data, DES_FROM_DB_EVENTS_ORG), None

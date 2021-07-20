@@ -112,3 +112,22 @@ class EventsDao(BaseDao):
             return None, None
         data = [dict(row) for row in data]
         return EventsDeserializer.deserialize(data, DES_FROM_DB_EVENTS_ORG), None
+
+    def get_by_organisation_id_with_date(self, organisation_id: int, calendar_date: datetime.date):
+        with self.session() as sess:
+            data = sess.query(
+                Events._id.label("events_id"),
+                Events._type.label("events_type"),
+                Events._name.label("events_name"),
+                Events._hours.label("events_hours"),
+                Events._skill.label("events_skill"),
+            ).where(
+                and_(
+                    Events._organisation_id == organisation_id,
+                    Events._date_event == calendar_date
+                )
+            ).all()
+        if not data:
+            return None, None
+        data = [dict(row) for row in data]
+        return EventsDeserializer.deserialize(data, DES_FROM_DB_EVENTS_ORG), None

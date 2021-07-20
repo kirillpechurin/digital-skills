@@ -1,3 +1,5 @@
+from datetime import date
+
 from portfolio.internal.biz.dao.events import EventsDao
 from portfolio.models.events import Events
 
@@ -35,6 +37,13 @@ class EventsService:
     @staticmethod
     def get_all_events_by_organisation_id(organisation_id: int):
         list_events, err = EventsDao().get_by_organisation_id(organisation_id)
+        if err:
+            return None, err
+        return list_events, None
+
+    @staticmethod
+    def get_events_by_date(organisation_id: int, calendar_date: date):
+        list_events, err = EventsDao().get_by_organisation_id_with_date(organisation_id, calendar_date)
         if err:
             return None, err
         return list_events, None

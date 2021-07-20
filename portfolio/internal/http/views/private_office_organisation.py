@@ -1,4 +1,5 @@
 import json
+from datetime import date, datetime
 
 from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
@@ -22,6 +23,7 @@ from portfolio.internal.biz.validators.achievements import AddAchievementSchema,
 from portfolio.internal.biz.validators.children import AddChildrenSchema
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
 from portfolio.internal.biz.validators.events import AddEventSchema, EditEventSchema
+from portfolio.internal.biz.validators.utils import get_calendar
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
 from portfolio.models.achievements import Achievements
@@ -422,7 +424,7 @@ def get_list_events(auth_account_main_id: int, organisation_id: int):
         return response
 
 
-@private_office_organisation.route('events/<int:events_id>', methods=['GET'])
+@private_office_organisation.route('/events/<int:events_id>', methods=['GET'])
 @get_org_id_and_acc_id_with_confirmed_email
 def detail_event(auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == 'GET':
@@ -446,7 +448,7 @@ def detail_event(auth_account_main_id: int, organisation_id: int, events_id: int
         return resp
 
 
-@private_office_organisation.route('events/<int:events_id>/edit_event', methods=["POST"])
+@private_office_organisation.route('/events/<int:events_id>/edit_event', methods=["POST"])
 @get_org_id_and_acc_id_with_confirmed_email
 def edit_event(auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == 'POST':
@@ -470,7 +472,7 @@ def edit_event(auth_account_main_id: int, organisation_id: int, events_id: int):
         return resp
 
 
-@private_office_organisation.route('events/<int:events_id>/add_achievement', methods=['GET', 'POST'])
+@private_office_organisation.route('/events/<int:events_id>/add_achievement', methods=['GET', 'POST'])
 @get_org_id_and_acc_id_with_confirmed_email
 def add_achievement(auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == 'POST':
@@ -527,5 +529,32 @@ def edit_achievement(auth_account_main_id: int, organisation_id: int, events_id:
         flash('Успешно обновлено')
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
+        )
+        return resp
+
+
+@private_office_organisation.route('/calendar', methods=['GET', 'POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def calendar(auth_account_main_id: int, organisation_id: int):
+    if request.method == 'GET':
+        calendar_date = request.args.get('calendar_date')
+        if not calendar_date:
+            calendar_date = date.today()
+        else:
+            calendar_date = datetime.strptime(calendar_date, '%Y-%m-%d').date()
+
+        events_for_date, err = EventsService.get_events_by_date(organisation_id, calendar_date)
+        if err:
+            return json.dumps(err)
+
+        calendar, month_str = get_calendar()
+        resp = make_response(
+            render_template(
+                'organisation/calendar.html',
+                events_for_date=events_for_date,
+                calendar=calendar,
+                month_str=month_str,
+                calendar_date=calendar_date
+            )
         )
         return resp

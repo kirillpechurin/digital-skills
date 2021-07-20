@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-5 ">
+          <div class="header d-flex justify-content-center bg-info" style="border: 2px solid; border-bottom: none; border-radius: 20px 20px 0 0;">
+            {{ month_str }}
+          </div>
+          <table class="table table-bordered" style="border: 2px solid;">
+            <thead>
+            <tr>
+              <th class="text-center" scope="col">Пн</th>
+              <th class="text-center" scope="col">Вт</th>
+              <th class="text-center" scope="col">Ср</th>
+              <th class="text-center" scope="col">Чт</th>
+              <th class="text-center" scope="col">Пт</th>
+              <th class="text-center" scope="col">Сб</th>
+              <th class="text-center" scope="col">Вс</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for week in calendar %}
+            <tr>
+              {% for day_week in week %}
+              <td class="text-center">
+                {% if calendar_date == day_week %}
+                <a class="btn btn-info" style="border-radius: 15px;" href="{{ url_for('organisation/private_office.calendar', calendar_date=day_week) }}">
+                  {{ day_week.day }}
+                </a>
+                {% else %}
+                <a class="btn btn-secondary" style="border-radius: 15px;" href="{{ url_for('organisation/private_office.calendar', calendar_date=day_week) }}">
+                  {{ day_week.day }}
+                </a>
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+      <hr>
+    </div>
+  </div>
+</div>
+<div class="container-fluid ">
+  <div class="row d-flex justify-content-center">
+
+    {% if events_for_date %}
+    <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+      <div class=" row">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3 text-center mb-3">
+        <span style="border-radius: 20px; padding: 10px;" class="bg-info">События</span>
+      </div>
+      {% for item in events_for_date %}
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+        Тип: {{ item.type }}
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+        Название: {{ item.name }}
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3 mb-3">
+        Приобретаемый навык: {{ item.skill }}
+      </div>
+      <hr>
+      {% endfor %}
+    </div>
+    </div>
+    {% else %}
+    <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3 text-center">
+        Нет активных событий на этот день
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3 text-center">
+        <a class="btn btn-info" href="{{ url_for('organisation/private_office.get_list_events') }}">
+          Создать
+        </a>
+      </div>
+    </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+
+</body>
+</html>

@@ -9,6 +9,7 @@ from portfolio.internal.biz.services.children import ChildrenService
 from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
 from portfolio.internal.biz.services.events_child import EventsChildService
 from portfolio.internal.biz.validators.children import EditChildSchema, AddChildrenSchema
+from portfolio.internal.biz.validators.utils import get_calendar
 from portfolio.internal.http.wrappers.account_role import check_account_role_parents_and_login_required
 from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
@@ -120,6 +121,17 @@ def progress(children_id: int, auth_account_main_id: int, parent_id: int):
             if err:
                 return json.dumps(err)
 
+
+            calendar_date = request.args.get('calendar_date')
+            if not calendar_date:
+                calendar_date = date.today()
+            else:
+                calendar_date = datetime.strptime(calendar_date, '%Y-%m-%d').date()
+            events_for_date, err = EventsChildService.get_events_by_date(children_id, calendar_date)
+            if err:
+                return json.dumps(err)
+
+            calendar, month_str = get_calendar()
             resp = make_response(render_template(
                 'parents/progress.html',
                 children=children,
@@ -135,6 +147,10 @@ def progress(children_id: int, auth_account_main_id: int, parent_id: int):
                 list_achievements_child=list_achievements_child,
                 gap_for_org=gap_for_org,
                 gap_for_skill=gap_for_skill,
+                events_for_date=events_for_date,
+                month_str=month_str,
+                calendar=calendar,
+                calendar_date=calendar_date
             ))
             return resp
 

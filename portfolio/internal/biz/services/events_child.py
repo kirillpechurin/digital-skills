@@ -184,3 +184,10 @@ class EventsChildService:
             if dict_by_max_skill[key]['hours'] > max_focus_event['hours']:
                 max_focus_event = dict_by_max_skill[key]
         return max_focus_event, None
+
+    @staticmethod
+    def get_events_by_date(children_id: int, calendar_date):
+        list_events_by_date, err = EventsChildDao().get_events_by_date(children_id, calendar_date)
+        if err:
+            return None, err
+        return list_events_by_date, None
