@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy import insert, and_
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
@@ -13,12 +14,14 @@ class ChildrenOrganisationDao(BaseDao):
     def get_by_children_id(self, children_id: int):
         with self.session() as sess:
             data = sess.query(
-                ChildrenOrganisation._id.label(''),
-                Organisation._id.label(''),
-                Organisation._name.label('')
+                ChildrenOrganisation._id.label('children_organisation_id'),
+                Organisation._id.label('organisation_id'),
+                Organisation._name.label('organisation_name')
             ).join(
                 ChildrenOrganisation._organisation
-            ).where(ChildrenOrganisation._children_id == children_id).all()
+            ).where(
+                ChildrenOrganisation._children_id == children_id
+            ).all()
         if not data:
             return None, None
         data = [dict(row) for row in data]
@@ -29,6 +32,39 @@ class ChildrenOrganisationDao(BaseDao):
             )
             for org in data
         ], None
+
+    def get_or_create(self, children_organisation: ChildrenOrganisation):
+        sess = self.sess_transaction
+        row = sess.query(
+            ChildrenOrganisation._id.label('children_organisation_id'),
+        ).where(
+            and_(
+                ChildrenOrganisation._organisation_id == children_organisation.organisation.id,
+                ChildrenOrganisation._children_id == children_organisation.children.id
+            )
+        ).first()
+        if row:
+            row = dict(row)
+            children_organisation.id = row['children_organisation_id']
+            return children_organisation, None
+
+        sql = insert(
+            ChildrenOrganisation
+        ).values(
+            organisation_id=children_organisation.organisation.id,
+            children_id=children_organisation.children.id
+        ).returning(
+            ChildrenOrganisation._id.label('children_organisation_id'),
+            ChildrenOrganisation._created_at.label('children_organisation_created_at'),
+            ChildrenOrganisation._edited_at.label('children_organisation_edited_at')
+        )
+        row = sess.execute(sql).first()
+        sess.commit()
+        row = dict(row)
+        children_organisation.id = row['children_organisation_id']
+        children_organisation.created_at = row['children_organisation_created_at']
+        children_organisation.edited_at = row['children_organisation_edited_at']
+        return children_organisation, None
 
     def add(self, children_organisation: ChildrenOrganisation):
         sess = self.sess_transaction
@@ -42,9 +78,17 @@ class ChildrenOrganisationDao(BaseDao):
             ChildrenOrganisation._created_at.label('children_organisation_created_at'),
             ChildrenOrganisation._edited_at.label('children_organisation_edited_at')
         )
-
-        row = sess.execute(sql).first()
+        print('row: ')
+        try:
+            row = sess.execute(sql).first()
+            sess.commit()
+        except sqlalchemy.exc.IntegrityError as exception:
+            if str(exception.orig)[48:48 + len("unique_children_organisation")] == 'unique_children_organisation':
+                return None, "ALREADY_EXISTS"
+            else:
+                raise exception
         row = dict(row)
+        print('row: ', row)
         children_organisation.id = row['children_organisation_id']
         children_organisation.created_at = row['children_organisation_created_at']
         children_organisation.edited_at = row['children_organisation_edited_at']
@@ -63,6 +107,7 @@ class ChildrenOrganisationDao(BaseDao):
         if not row:
             return None, 'get_by_org_and_child_id'
         row = dict(row)
+        print('row_get_by_org: ', row)
         children_organisation.id = row['children_organisation_id']
         return children_organisation, None
 

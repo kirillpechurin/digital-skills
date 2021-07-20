@@ -1,5 +1,5 @@
 import string
-from datetime import datetime
+from datetime import datetime, date
 from random import choice, randint
 from string import digits
 
@@ -25,3 +25,8 @@ def get_temp_password() -> str:
     chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
     size = randint(8, 15)
     return ''.join(choice(chars) for x in range(size))
+
+
+def calculate_age(born):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))

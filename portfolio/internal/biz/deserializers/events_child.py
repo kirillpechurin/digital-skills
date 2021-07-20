@@ -29,7 +29,6 @@ class EventsChildDeserializer(BaseDeserializer):
             EventsChild(
                 id=event.get('events_child_id'),
                 status=event.get('events_child_status'),
-                hours_event=event.get('events_child_hours_event'),
                 events=EventsDeserializer.deserialize(event, DES_FROM_DB_GET_DETAIL_EVENT),
                 children_organisation=ChildrenOrganisation(organisation=Organisation(name=event.get('organisation_name'),
                                                                                      login=event.get('organisation_login')))

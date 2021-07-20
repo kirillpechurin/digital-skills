@@ -35,10 +35,7 @@
             <h4>Дата рождения: {{ children_org.children.date_born }}</h4>
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
-            <h4>Возраст: 9 лет</h4>
-          </div>
-            <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
-            <h4>Группа/Класс: 4</h4>
+            <h4>Возраст: {{ age }} лет</h4>
           </div>
           <div class="col-9 col-sm-9 col-md-9 col-lg-9 col-xl-9 mt-5">
             <h4>Количество мероприятий, посещенных ребенком:
@@ -141,7 +138,7 @@
             <th scope="col">Дата проведения</th>
             <th scope="col">Приобретаемые навыки</th>
             <th scope="col">Время</th>
-            <th scope="col">Изменение статуса</th>
+            <th scope="col">Изменение часов посещения</th>
           </tr>
           </thead>
           <tbody>
@@ -265,7 +262,7 @@
         <form method="post" action="{{ url_for('organisation/private_office.update_status_event_for_child', children_org_id=children_org.id, events_id=active_event.events.id) }}">
           <div class="mb-3">
             <select name="status_event" class="form-select" aria-label="Default select example">
-              <option selected>Выберите статус</option>
+              <option selected name="input" value="False">Выберите статус</option>
               <option name="success" value="True">Успешно прошел</option>
             </select>
           </div>

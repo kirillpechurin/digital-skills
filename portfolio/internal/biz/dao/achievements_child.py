@@ -59,10 +59,11 @@ class AchievementsChildDao(BaseDao):
             ).join(
                 ChildrenOrganisation._organisation
             ).where(
-                ChildrenOrganisation._id == children_id
+                ChildrenOrganisation._children_id == children_id
             ).all()
         if not data:
             return None, None
+        print(data)
         data = [dict(row) for row in data]
         return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID), None
 
@@ -82,15 +83,15 @@ class AchievementsChildDao(BaseDao):
             row = sess.execute(sql).first()
             sess.commit()
         row = dict(row)
-        achievements_child.id = row['id']
-        achievements_child.edited_at = row['edited_at']
-        achievements_child.created_at = row['created_at']
+        achievements_child.id = row['achievements_child_id']
+        achievements_child.edited_at = row['achievements_child_created_at']
+        achievements_child.created_at = row['achievements_child_edited_at']
         return achievements_child, None
 
     def update(self, achievements_child_id: int, achievements_child: AchievementsChild):
         with self.session() as sess:
-            achievements_child_db = sess.query(AchievementsChild).where(AchievementsChild._id == achievements_child_id)
-            achievements_child_db._id = achievements_child.id
+            achievements_child_db = sess.query(AchievementsChild).where(AchievementsChild._id == achievements_child_id).first()
+            achievements_child_db._achievements_id = achievements_child.achievements.id
             achievements_child_db._point = achievements_child.point
             sess.commit()
         return achievements_child, None

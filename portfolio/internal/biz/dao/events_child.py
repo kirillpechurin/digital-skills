@@ -18,31 +18,7 @@ class EventsChildDao(BaseDao):
             data = sess.query(
                 EventsChild._id.label('events_child_id'),
                 EventsChild._status.label('events_child_status'),
-                EventsChild._hours_event.label('events_child_hours_event'),
-                Events._id.label('events_id'),
-                Events._type.label('events_type'),
-                Events._name.label('events_name'),
-                Events._date_event.label('events_date_event'),
-                Events._skill.label('events_skill'),
-                Organisation._name.label('organisation_name')
-            ).join(
-                EventsChild._events
-            ).join(
-                EventsChild._children_organisation
-            ).join(
-                ChildrenOrganisation._organisation
-            ).where(and_(EventsChild._status is True, ChildrenOrganisation._children_id == children_id)).all()
-        if not data:
-            return None, None
-        data = [dict(row) for row in data]
-        return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
-
-    def get_completed_events_by_child_id_with_date(self, children_id: int, gap_for_skill):
-        with self.session() as sess:
-            data = sess.query(
-                EventsChild._id.label('events_child_id'),
-                EventsChild._status.label('events_child_status'),
-                EventsChild._hours_event.label('events_child_hours_event'),
+                EventsChild._hours_event.label('events_hours'),
                 Events._id.label('events_id'),
                 Events._type.label('events_type'),
                 Events._name.label('events_name'),
@@ -57,7 +33,36 @@ class EventsChildDao(BaseDao):
                 ChildrenOrganisation._organisation
             ).where(
                 and_(
-                    EventsChild._status is True,
+                    EventsChild._status == True,
+                    ChildrenOrganisation._children_id == children_id
+                )
+            ).all()
+        if not data:
+            return None, None
+        data = [dict(row) for row in data]
+        return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
+
+    def get_completed_events_by_child_id_with_date(self, children_id: int, gap_for_skill):
+        with self.session() as sess:
+            data = sess.query(
+                EventsChild._id.label('events_child_id'),
+                EventsChild._status.label('events_child_status'),
+                EventsChild._hours_event.label('events_hours'),
+                Events._id.label('events_id'),
+                Events._type.label('events_type'),
+                Events._name.label('events_name'),
+                Events._date_event.label('events_date_event'),
+                Events._skill.label('events_skill'),
+                Organisation._name.label('organisation_name')
+            ).join(
+                EventsChild._events
+            ).join(
+                EventsChild._children_organisation
+            ).join(
+                ChildrenOrganisation._organisation
+            ).where(
+                and_(
+                    EventsChild._status == True,
                     ChildrenOrganisation._children_id == children_id,
                     Events._date_event > gap_for_skill
                 )
@@ -72,7 +77,7 @@ class EventsChildDao(BaseDao):
             data = sess.query(
                 EventsChild._id.label('events_child_id'),
                 EventsChild._status.label('events_child_status'),
-                EventsChild._hours_event.label('events_child_hours_event'),
+                EventsChild._hours_event.label('events_hours'),
                 Events._id.label('events_id'),
                 Events._type.label('events_type'),
                 Events._name.label('events_name'),
@@ -85,7 +90,12 @@ class EventsChildDao(BaseDao):
                 EventsChild._children_organisation
             ).join(
                 ChildrenOrganisation._organisation
-            ).where(and_(EventsChild._status is False, ChildrenOrganisation._children_id == children_id)).all()
+            ).where(
+                and_(
+                    EventsChild._status == False,
+                    ChildrenOrganisation._children_id == children_id
+                )
+            ).all()
         if not data:
             return None, None
         data = [dict(row) for row in data]
@@ -124,7 +134,6 @@ class EventsChildDao(BaseDao):
                 Events._name.label('events_name'),
                 Events._date_event.label('events_date_event'),
                 Events._skill.label('events_skill'),
-                Organisation._name.label('organisation_name'),
                 ChildrenOrganisation._id.label('children_organisation_id'),
                 Children._id.label('children_id'),
                 Children._name.label('children_name'),
@@ -139,7 +148,7 @@ class EventsChildDao(BaseDao):
                 ChildrenOrganisation._children
             ).where(
                 and_(
-                    EventsChild._status is False,
+                    EventsChild._status == False,
                     ChildrenOrganisation._id == children_organisation_id
                 )
             ).all()
@@ -159,7 +168,6 @@ class EventsChildDao(BaseDao):
                 Events._name.label('events_name'),
                 Events._date_event.label('events_date_event'),
                 Events._skill.label('events_skill'),
-                Organisation._name.label('organisation_name'),
                 ChildrenOrganisation._id.label('children_organisation_id'),
                 Children._id.label('children_id'),
                 Children._name.label('children_name'),
@@ -174,12 +182,13 @@ class EventsChildDao(BaseDao):
                 ChildrenOrganisation._children
             ).where(
                 and_(
-                    EventsChild._status is True,
+                    EventsChild._status == True,
                     ChildrenOrganisation._id == children_organisation_id
                 )
             ).all()
         if not data:
             return None, None
+        print(data)
         data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION), None
 
@@ -192,7 +201,8 @@ class EventsChildDao(BaseDao):
                     EventsChild._children_organisation_id == events_child.children_organisation.id,
                     EventsChild._events_id == events_child.events.id
                 )
-            )
+            ).first()
+            print(events_child_db)
             events_child_db._status = events_child.status
             sess.commit()
         return events_child, None
@@ -206,7 +216,7 @@ class EventsChildDao(BaseDao):
                     EventsChild._children_organisation_id == events_child.children_organisation.id,
                     EventsChild._events_id == events_child.events.id
                 )
-            )
+            ).first()
             events_child_db._hours_event = events_child.hours_event
             sess.commit()
         return events_child, None

@@ -37,7 +37,7 @@ class AchievementsChildDeserializer(BaseDeserializer):
         return [
             AchievementsChild(
                 id=achievement.get('achievements_child_id'),
-                point=achievement.get('achievements_point'),
+                point=achievement.get('achievements_child_point'),
                 achievements=AchievementsDeserializer.deserialize(achievement, DES_FROM_DB_GET_INFO_ACHIEVEMENTS),
                 children_organisation=ChildrenOrganisation(
                     organisation=Organisation(id=achievement.get('organisation_id'),

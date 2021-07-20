@@ -1,6 +1,6 @@
 from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
 from portfolio.internal.biz.deserializers.children import DES_FROM_DB_INFO_CHILDREN, ChildrenDeserialize, \
-    DES_FOR_ADD_CHILD
+    DES_FOR_ADD_CHILD, DES_FROM_DB_INFO_CHILD
 from portfolio.models.children_organisation import ChildrenOrganisation
 
 DES_FROM_DB_LIST_LEARNERS = 'des-from-db-list-learners'
@@ -23,7 +23,7 @@ class ChildrenOrganisationDeserializer(BaseDeserializer):
         return [
             ChildrenOrganisation(
                 id=row['children_organisation_id'],
-                children=ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILDREN)
+                children=ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILD)
             )
             for row in data
         ]
@@ -32,5 +32,5 @@ class ChildrenOrganisationDeserializer(BaseDeserializer):
     def _des_from_db_get_detail_learners(row):
         return ChildrenOrganisation(
             id=row['children_organisation_id'],
-            children=ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILDREN)
+            children=ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILD)
         )

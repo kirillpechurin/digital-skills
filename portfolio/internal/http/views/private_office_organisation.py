@@ -17,6 +17,7 @@ from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.events_child import EventsChildService
 from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
+from portfolio.internal.biz.services.utils import calculate_age
 from portfolio.internal.biz.validators.achievements import AddAchievementSchema, EditAchievementSchema
 from portfolio.internal.biz.validators.children import AddChildrenSchema
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
@@ -289,6 +290,8 @@ def get_detail_children(children_org_id: int, auth_account_main_id: int, organis
         list_achievements_for_completed_events, err = AchievementsService.get_all_by_completed_events_id(activity_child.list_completed_events)
         if err:
             return json.dumps(err)
+        for complete_event in activity_child.list_completed_events:
+            print(complete_event.events.hours)
         resp = make_response(
             render_template(
                 'organisation/learner.html',
@@ -297,7 +300,8 @@ def get_detail_children(children_org_id: int, auth_account_main_id: int, organis
                 sum_hours=sum([completed_event.events.hours for completed_event in activity_child.list_completed_events]) if activity_child.list_completed_events else 0,
                 activity_child=activity_child,
                 list_achievements_for_completed_events=list_achievements_for_completed_events,
-                children_org=children_org
+                children_org=children_org,
+                age=calculate_age(children_org.children.date_born)
             )
         )
         return resp
@@ -307,10 +311,11 @@ def get_detail_children(children_org_id: int, auth_account_main_id: int, organis
 @get_org_id_and_acc_id_with_confirmed_email
 def update_status_event_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == 'POST':
+        print(request.form)
         events_child = EventsChild(
             events=Events(id=events_id),
             children_organisation=ChildrenOrganisation(id=children_org_id),
-            status=request.form.get('status_event')
+            status=True if request.form.get('status_event') == 'True' else False
         )
         events_child, err = EventsChildService.update_status(events_child)
         if err:
@@ -327,9 +332,14 @@ def update_status_event_for_child(children_org_id: int, auth_account_main_id: in
 def update_complete_event_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == "POST":
         count_hours = request.form.get('hours')
-        events_child = EventsChild(children_organisation=ChildrenOrganisation(id=children_org_id),
-                                   events=Events(id=events_id,
-                                                 hours=count_hours))
+        events_child = EventsChild(
+            hours_event=count_hours,
+            children_organisation=ChildrenOrganisation(
+                id=children_org_id),
+            events=Events(
+                id=events_id,
+            )
+        )
         events_child, err = EventsChildService.update_hours(events_child)
         if err:
             return None, err

@@ -40,9 +40,9 @@ class RequestToOrganisationService:
         if err:
             return None, err
 
-        request_to_organisation.children.parents.account_main.is_email_sent = MailServer.send_email(
+        request_to_organisation.parents.account_main.is_email_sent = MailServer.send_email(
             EMAIL_ACCEPT_REQUEST,
-            request_to_organisation.children.parents.account_main.email,
+            request_to_organisation.parents.account_main.email,
             request_to_organisation.status)
 
         return request_to_organisation, None

@@ -13,6 +13,7 @@ from portfolio.models.children import Children
 from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.events import Events
 from portfolio.models.events_child import EventsChild
+from portfolio.models.organisation import Organisation
 from portfolio.models.parents import Parents
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
@@ -66,9 +67,10 @@ class RequestToOrganisationDao(BaseDao):
             ).where(
                 and_(
                     Events._organisation_id == request_to_organisation.events.organisation.id,
-                    RequestToOrganisation._status is False
+                    RequestToOrganisation._status == False
                 )
             ).all()
+        print(data)
         if not data:
             return None, None
         data = [dict(row) for row in data]
@@ -101,7 +103,7 @@ class RequestToOrganisationDao(BaseDao):
             ).where(
                 and_(
                     RequestToOrganisation._id == request_id,
-                    RequestToOrganisation._status is False
+                    RequestToOrganisation._status == False
                 )
             ).first()
         if not row:
@@ -125,20 +127,24 @@ class RequestToOrganisationDao(BaseDao):
 
     def get_ids_by_req_id(self, request_to_organisation):
         row = self.sess_transaction.query(
-            RequestToOrganisation._events_id,
-            RequestToOrganisation._children_id,
-            RequestToOrganisation._parents_id,
-            AccountMain._id,
-            AccountMain._email,
+            RequestToOrganisation._events_id.label('request_to_organisation_events_id'),
+            Events._organisation_id.label('events_organisation_id'),
+            RequestToOrganisation._children_id.label('request_to_organisation_children_id'),
+            RequestToOrganisation._parents_id.label('request_to_organisation_parents_id'),
+            AccountMain._id.label('parents_account_main_id'),
+            AccountMain._email.label('parents_account_main_email'),
         ).join(
             RequestToOrganisation._parents
         ).join(
             Parents._account_main
+        ).join(
+            RequestToOrganisation._events
         ).where(
             RequestToOrganisation._id == request_to_organisation.id
         ).first()
         row = dict(row)
-        request_to_organisation.events = Events(id=row['request_to_organisation_events_id'])
+        request_to_organisation.events = Events(id=row['request_to_organisation_events_id'],
+                                                organisation=Organisation(id=row['events_organisation_id']))
         request_to_organisation.children = Children(id=row['request_to_organisation_children_id'])
         request_to_organisation.parents = Parents(
             id=row['request_to_organisation_parents_id'],
@@ -153,23 +159,25 @@ class RequestToOrganisationDao(BaseDao):
         sess = self.sess_transaction
         request_to_organisation_db = sess.query(RequestToOrganisation).where(RequestToOrganisation._id == request_to_organisation.id).first()
         request_to_organisation_db._status = request_to_organisation.status
+        sess.commit()
         return request_to_organisation, None
 
     def accept_request(self, request_to_organisation: RequestToOrganisation):
         try:
+            print('request_to_organisation')
             self.sess_transaction = self.session()
+            print('request_to_organisation')
             request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).get_ids_by_req_id(request_to_organisation)
             if err:
                 return None, err
-
+            print('request_to_organisation')
             children_organisation = ChildrenOrganisation(children=request_to_organisation.children,
                                                          organisation=request_to_organisation.events.organisation)
 
-            children_organisation, err = ChildrenOrganisationDao(sess_transaction=self.sess_transaction).add(children_organisation)
-            if err == "ALREADY_EXISTS":
-                children_organisation, err = ChildrenOrganisationDao(sess_transaction=self.sess_transaction).get_by_org_and_child_id(children_organisation)
-            else:
+            children_organisation_get_or_create, err = ChildrenOrganisationDao(sess_transaction=self.sess_transaction).get_or_create(children_organisation)
+            if err:
                 return None, err
+            children_organisation.id = children_organisation_get_or_create.id
 
             events_child = EventsChild(
                 events=Events(
@@ -179,26 +187,27 @@ class RequestToOrganisationDao(BaseDao):
                     id=children_organisation.id,
                 )
             )
-
+            print('events get_by_id')
             events, err = EventsDao(sess_transaction=self.sess_transaction).get_by_id(request_to_organisation.events.id)
             if err:
                 return None, err
-
             events_child.events = events
 
             events_child, err = EventsChildDao(sess_transaction=self.sess_transaction).add_by_request(events_child)
             if err:
                 return None, err
+            print('events_child add_by_request')
             request_to_organisation.status = True
             request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).update_status(request_to_organisation)
             if err:
                 return None, err
+            print('request_to_organisation update_status')
 
             self.sess_transaction.commit()
+            self.sess_transaction.close()
             return request_to_organisation, None
         except Exception as exc:
             print(exc)
             return None, "Неудачно"
         finally:
             self.sess_transaction.rollback()
-            self.sess_transaction.close()
