@@ -3,7 +3,8 @@ import json
 from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
-from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FOR_ADD_ACHIEVEMENT
+from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FOR_ADD_ACHIEVEMENT, \
+    DES_FOR_EDIT_ACHIEVEMENT
 from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
@@ -16,7 +17,7 @@ from portfolio.internal.biz.services.events import EventsService
 from portfolio.internal.biz.services.events_child import EventsChildService
 from portfolio.internal.biz.services.organisation import OrganisationService
 from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
-from portfolio.internal.biz.validators.achievements import AddAchievementSchema
+from portfolio.internal.biz.validators.achievements import AddAchievementSchema, EditAchievementSchema
 from portfolio.internal.biz.validators.children import AddChildrenSchema
 from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
 from portfolio.internal.biz.validators.events import AddEventSchema, EditEventSchema
@@ -488,6 +489,28 @@ def delete_achievement(auth_account_main_id: int, organisation_id: int, events_i
         if err:
             return flash(err)
         flash('Успешно удалено')
+        resp = make_response(
+            redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
+        )
+        return resp
+
+
+@private_office_organisation.route('events/<int:events_id>/edit_achievement/<int:achievement_id>', methods=['GET', 'POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def edit_achievement(auth_account_main_id: int, organisation_id: int, events_id: int, achievement_id: int):
+    if request.method == 'POST':
+        errors = EditAchievementSchema().validate(dict(name=request.form.get('name'),
+                                                       nomination=request.form.get('nomination'),
+                                                       points=request.form.get('points')))
+        if errors:
+            return json.dumps(errors)
+        achievement = AchievementsDeserializer.deserialize(request.form, DES_FOR_EDIT_ACHIEVEMENT)
+        achievement.id = achievement_id
+        achievement.events = Events(id=events_id)
+        achievement, err = AchievementsService.edit_achievement(achievement)
+        if err:
+            return flash(err)
+        flash('Успешно обновлено')
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )

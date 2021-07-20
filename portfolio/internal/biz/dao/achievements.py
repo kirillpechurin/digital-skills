@@ -64,3 +64,12 @@ class AchievementsDao(BaseDao):
                 Achievements._events_id == events_id
             ).first()
         return AchievementsDeserializer.deserialize(data, DES_FROM_DB_DETAIL_ACHIEVEMENTS), None
+
+    def update(self, achievement_id: int, achievement: Achievements):
+        with self.session() as sess:
+            achievement_db = sess.query(Achievements).where(Achievements._id == achievement_id).first()
+            for column in achievement_db:
+                if not getattr(achievement, f"{column}") == '-1':
+                    achievement_db[f'{column}'] = getattr(achievement, f"{column}")
+            sess.commit()
+        return achievement

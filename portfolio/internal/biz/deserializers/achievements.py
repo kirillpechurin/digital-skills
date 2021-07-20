@@ -6,6 +6,7 @@ DES_FROM_DB_GET_INFO_ACHIEVEMENTS = 'des-from-db-get-info-achievements'
 DES_FROM_DB_ALL_ACHIEVEMENTS = 'des-from-db-all-achievements'
 DES_FROM_DB_DETAIL_ACHIEVEMENTS = 'des-from-db-detail-achievements'
 DES_FOR_ADD_ACHIEVEMENT = 'des-for-add-achievement'
+DES_FOR_EDIT_ACHIEVEMENT = 'des-for-edit-achievement'
 
 
 class AchievementsDeserializer(BaseDeserializer):
@@ -20,6 +21,8 @@ class AchievementsDeserializer(BaseDeserializer):
             return cls._des_from_db_detail_achievements
         elif format_des == DES_FOR_ADD_ACHIEVEMENT:
             return cls._des_for_add_achievement
+        elif format_des == DES_FOR_EDIT_ACHIEVEMENT:
+            return cls._des_for_edit_achievement
         else:
             raise TypeError
 
@@ -60,4 +63,12 @@ class AchievementsDeserializer(BaseDeserializer):
             name=req_form.get('name'),
             points=[i + 1 for i in range(int(req_form.get('points')))],
             nomination=req_form.get('nomination'),
+        )
+
+    @staticmethod
+    def _des_for_edit_achievement(req_form):
+        return Achievements(
+            name=req_form.get('name') if req_form.get('name') else '-1',
+            points=[i + 1 for i in range(int(req_form.get('points')))] if req_form.get('points') else [-1],
+            nomination=req_form.get('nomination') if req_form.get('nomination') else '-1',
         )

@@ -36,3 +36,11 @@ class AchievementsService:
         if err:
             return None, err
         return achievement_id, None
+
+    @staticmethod
+    def edit_achievement(achievements: Achievements):
+        achievement, err = AchievementsDao().update(achievements.id, achievements)
+        if err:
+            return None, err
+        return achievement, None
+
