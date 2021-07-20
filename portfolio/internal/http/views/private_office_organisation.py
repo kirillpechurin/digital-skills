@@ -217,3 +217,24 @@ def reject_request(auth_account_main_id: int, organisation_id: int, request_id: 
             redirect(url_for('organisation/private_office.get_requests'))
         )
         return resp
+
+
+@private_office_organisation.route('/requests/<int:request_id>/approve', methods=['POST', 'GET'])
+@get_org_id_and_acc_id_with_confirmed_email
+def approve_req(auth_account_main_id: int, organisation_id: int, request_id: int):
+    if request.method == 'POST':
+        request_to_organisation = RequestToOrganisation(
+            id=request_id,
+            events=Events(
+                organisation=Organisation(
+                    id=organisation_id,
+                )
+            )
+        )
+        request_to_organisation, err = RequestToOrganisationService.accept_request(request_to_organisation)
+        if err:
+            flash(err)
+        resp = make_response(
+            redirect(url_for('organisation/private_office.get_requests'))
+        )
+        return resp

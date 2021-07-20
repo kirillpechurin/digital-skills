@@ -1,10 +1,18 @@
 from sqlalchemy import insert, and_, delete
 
+from portfolio.internal.biz.dao.account_main import AccountMainDao
 from portfolio.internal.biz.dao.base_dao import BaseDao
+from portfolio.internal.biz.dao.children import ChildrenDao
+from portfolio.internal.biz.dao.children_organisation import ChildrenOrganisationDao
+from portfolio.internal.biz.dao.events import EventsDao
+from portfolio.internal.biz.dao.events_child import EventsChildDao
 from portfolio.internal.biz.deserializers.request_to_organisation import RequestToOrganisationDeserializer, \
     DES_FROM_DB_ALL_ACTIVE_REQUESTS, DES_FROM_DB_DETAIL_REQUEST
+from portfolio.models.account_main import AccountMain
 from portfolio.models.children import Children
+from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.events import Events
+from portfolio.models.events_child import EventsChild
 from portfolio.models.parents import Parents
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
@@ -110,3 +118,82 @@ class RequestToOrganisationDao(BaseDao):
             row = sess.execute(sql).first()
             sess.commit()
         return RequestToOrganisation(id=row['id']), None
+
+    def get_ids_by_req_id(self, request_to_organisation):
+        row = self.sess_transaction.query(
+            RequestToOrganisation._events_id,
+            RequestToOrganisation._children_id,
+            RequestToOrganisation._parents_id,
+            AccountMain._id,
+            AccountMain._email,
+        ).join(
+            RequestToOrganisation._parents
+        ).join(
+            Parents._account_main
+        ).where(
+            RequestToOrganisation._id == request_to_organisation.id
+        ).first()
+        request_to_organisation.events = Events(id=row['request_to_organisation_events_id'])
+        request_to_organisation.children = Children(id=row['request_to_organisation_children_id'])
+        request_to_organisation.parents = Parents(
+            id=row['request_to_organisation_parents_id'],
+            account_main=AccountMain(
+                id=row['parents_account_main_id'],
+                email=row['parents_account_main_email']
+            )
+        )
+        return request_to_organisation, None
+
+    def update_status(self, request_to_organisation: RequestToOrganisation):
+        sess = self.sess_transaction
+        request_to_organisation_db = sess.query(RequestToOrganisation).where(RequestToOrganisation._id == request_to_organisation.id).first()
+        request_to_organisation_db._status = request_to_organisation.status
+        return request_to_organisation, None
+
+    def accept_request(self, request_to_organisation: RequestToOrganisation):
+        try:
+            self.sess_transaction = self.session()
+            request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).get_ids_by_req_id(request_to_organisation)
+            if err:
+                return None, err
+
+            children_organisation = ChildrenOrganisation(children=request_to_organisation.children,
+                                                         organisation=request_to_organisation.events.organisation)
+
+            children_organisation, err = ChildrenOrganisationDao(sess_transaction=self.sess_transaction).add(children_organisation)
+            if err == "ALREADY_EXISTS":
+                children_organisation, err = ChildrenOrganisationDao(sess_transaction=self.sess_transaction).get_by_org_and_child_id(children_organisation)
+            else:
+                return None, err
+
+            events_child = EventsChild(
+                events=Events(
+                    id=request_to_organisation.events.id
+                ),
+                children_organisation=ChildrenOrganisation(
+                    id=children_organisation.id,
+                )
+            )
+
+            events, err = EventsDao(sess_transaction=self.sess_transaction).get_by_id(request_to_organisation.events.id)
+            if err:
+                return None, err
+
+            events_child.events = events
+
+            events_child, err = EventsChildDao(sess_transaction=self.sess_transaction).add_by_request(events_child)
+            if err:
+                return None, err
+            request_to_organisation.status = True
+            request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).update_status(request_to_organisation)
+            if err:
+                return None, err
+
+            self.sess_transaction.commit()
+            return request_to_organisation, None
+        except Exception as exc:
+            print(exc)
+            return None, "Неудачно"
+        finally:
+            self.sess_transaction.rollback()
+            self.sess_transaction.close()

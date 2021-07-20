@@ -1,3 +1,4 @@
+from portfolio.drivers.mail_server import MailServer, EMAIL_ACCEPT_REQUEST
 from portfolio.internal.biz.dao.request_to_organisation import RequestToOrganisationDao
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
@@ -31,4 +32,17 @@ class RequestToOrganisationService:
         request_to_organisation, err = RequestToOrganisationDao().remove_by_id(request_to_organisation.id)
         if err:
             return None, err
+        return request_to_organisation, None
+
+    @staticmethod
+    def accept_request(request_to_organisation: RequestToOrganisation):
+        request_to_organisation, err = RequestToOrganisationDao().accept_request(request_to_organisation)
+        if err:
+            return None, err
+
+        request_to_organisation.children.parents.account_main.is_email_sent = MailServer.send_email(
+            EMAIL_ACCEPT_REQUEST,
+            request_to_organisation.children.parents.account_main.email,
+            request_to_organisation.status)
+
         return request_to_organisation, None

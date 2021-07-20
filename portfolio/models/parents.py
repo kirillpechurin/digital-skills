@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import ForeignKey, Column, Integer, String, UniqueConstraint
+from sqlalchemy.orm import relationship
 
 from portfolio.models.abstract_model import AbstractModel
 from portfolio.models.account_main import AccountMain
@@ -12,6 +13,7 @@ class Parents(AbstractModel):
     _account_main_id = Column(ForeignKey('account_main.id', onupdate="CASCADE", ondelete='CASCADE'), name="account_main_id", type_=Integer, nullable=False)
     _name = Column(name='name', type_=String(150), nullable=False)
     _surname = Column(name='surname', type_=String(150), nullable=False)
+    _account_main = relationship("AccountMain")
     UniqueConstraint("account_main_id", "name", "surname", name='unique_parents')
 
     def __init__(self,

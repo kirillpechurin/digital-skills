@@ -56,6 +56,18 @@ class EventsDao(BaseDao):
         return EventsDeserializer.deserialize(data, DES_FROM_DB_ACTIVE_EVENTS_ORG), None
 
     def get_by_id(self, event_id: int):
+        if self.sess_transaction:
+            row = self.sess_transaction.query(
+                Events._id.label("events_id"),
+                Events._type.label("events_type"),
+                Events._name.label("events_name"),
+                Events._date_event.label("events_date_event"),
+                Events._hours.label("events_hours"),
+                Events._skill.label("events_skill"),
+            ).where(Events._id == event_id).first()
+            if not row:
+                return None, "Данное событие не существует"
+            return EventsDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_EVENT), None
         with self.session() as sess:
             row = sess.query(
                 Events._id.label("events_id"),
