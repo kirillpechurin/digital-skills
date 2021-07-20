@@ -21,3 +21,11 @@ class AchievementsService:
         if err:
             return None, err
         return list_achievement, None
+
+    @staticmethod
+    def add_achievement(achievement: Achievements):
+        achievement, err = AchievementsDao().add(achievement)
+        if err:
+            return None, err
+
+        return achievement, None

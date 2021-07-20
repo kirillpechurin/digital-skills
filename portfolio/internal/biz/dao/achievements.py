@@ -1,11 +1,34 @@
 from typing import Tuple
 
+from sqlalchemy import insert
+
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_DETAIL_ACHIEVEMENTS
 from portfolio.models.achievements import Achievements
 
 
 class AchievementsDao(BaseDao):
+
+    def add(self, achievement: Achievements):
+        sql = insert(
+            Achievements
+        ).values(
+            events_id=achievement.events.id,
+            name=achievement.name,
+            points=achievement.points,
+            nomination=achievement.nomination
+        ).returning(
+            Achievements._id.label('achievements_id'),
+            Achievements._created_at.label('achievements_created_at'),
+            Achievements._edited_at.label('achievements_edited_at')
+        )
+        with self.session() as sess:
+            row = sess.execute(sql).first()
+            sess.commit()
+        achievement.id = row['achievements_id']
+        achievement.created_at = row['achievements_created_at']
+        achievement.edited_at = row['achievements_edited_at']
+        return achievement, None
 
     def get_by_tuple_events_id(self, tuple_events_id: Tuple[int]):
         with self.session() as sess:

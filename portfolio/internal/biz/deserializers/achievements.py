@@ -5,6 +5,7 @@ from portfolio.models.achievements import Achievements
 DES_FROM_DB_GET_INFO_ACHIEVEMENTS = 'des-from-db-get-info-achievements'
 DES_FROM_DB_ALL_ACHIEVEMENTS = 'des-from-db-all-achievements'
 DES_FROM_DB_DETAIL_ACHIEVEMENTS = 'des-from-db-detail-achievements'
+DES_FOR_ADD_ACHIEVEMENT = 'des-for-add-achievement'
 
 
 class AchievementsDeserializer(BaseDeserializer):
@@ -17,6 +18,8 @@ class AchievementsDeserializer(BaseDeserializer):
             return cls._des_from_db_all_achievements
         elif format_des == DES_FROM_DB_DETAIL_ACHIEVEMENTS:
             return cls._des_from_db_detail_achievements
+        elif format_des == DES_FOR_ADD_ACHIEVEMENT:
+            return cls._des_for_add_achievement
         else:
             raise TypeError
 
@@ -49,4 +52,12 @@ class AchievementsDeserializer(BaseDeserializer):
             name=row.get('achievements_name'),
             points=row.get('achievements_points'),
             nomination=row.get('achievements_nomination')
+        )
+
+    @staticmethod
+    def _des_for_add_achievement(req_form):
+        return Achievements(
+            name=req_form.get('name'),
+            points=[i + 1 for i in range(int(req_form.get('points')))],
+            nomination=req_form.get('nomination'),
         )
