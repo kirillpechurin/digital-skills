@@ -10,3 +10,10 @@ class AchievementsChildService:
         if err:
             return None, err
         return achievements_child, None
+
+    @staticmethod
+    def update_by_id(achievements_child: AchievementsChild):
+        achievements_child, err = AchievementsChildDao().update(achievements_child.id, achievements_child)
+        if err:
+            return None, err
+        return achievements_child, None

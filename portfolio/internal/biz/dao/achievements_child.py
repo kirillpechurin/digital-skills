@@ -54,3 +54,11 @@ class AchievementsChildDao(BaseDao):
         achievements_child.edited_at = row['edited_at']
         achievements_child.created_at = row['created_at']
         return achievements_child, None
+
+    def update(self, achievements_child_id: int, achievements_child: AchievementsChild):
+        with self.session() as sess:
+            achievements_child_db = sess.query(AchievementsChild).where(AchievementsChild._id == achievements_child_id)
+            achievements_child_db._id = achievements_child.id
+            achievements_child_db._point = achievements_child.point
+            sess.commit()
+        return achievements_child, None
