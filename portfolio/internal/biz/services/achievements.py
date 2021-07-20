@@ -29,3 +29,10 @@ class AchievementsService:
             return None, err
 
         return achievement, None
+
+    @staticmethod
+    def delete_achievement(achievements: Achievements):
+        achievement_id, err = AchievementsDao().remove_by_id(achievements.id)
+        if err:
+            return None, err
+        return achievement_id, None

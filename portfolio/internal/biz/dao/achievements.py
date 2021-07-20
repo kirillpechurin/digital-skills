@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_DETAIL_ACHIEVEMENTS
@@ -29,6 +29,15 @@ class AchievementsDao(BaseDao):
         achievement.created_at = row['achievements_created_at']
         achievement.edited_at = row['achievements_edited_at']
         return achievement, None
+
+    def remove_by_id(self, achievement_id: int):
+        sql = delete(
+            Achievements
+        ).where(Achievements._id == achievement_id)
+        with self.session() as sess:
+            sess.execute(sql)
+            sess.commit()
+        return achievement_id, None
 
     def get_by_tuple_events_id(self, tuple_events_id: Tuple[int]):
         with self.session() as sess:

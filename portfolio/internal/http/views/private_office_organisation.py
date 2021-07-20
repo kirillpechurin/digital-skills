@@ -474,3 +474,21 @@ def add_achievement(auth_account_main_id: int, organisation_id: int, events_id: 
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )
         return resp
+
+
+@private_office_organisation.route('events/<int:events_id>/delete_achievement/<int:achievement_id>', methods=['GET', 'POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def delete_achievement(auth_account_main_id: int, organisation_id: int, events_id: int, achievement_id: int):
+    if request.method == 'POST':
+        achievement = Achievements(
+            id=achievement_id,
+            events=Events(id=events_id)
+        )
+        achievement, err = AchievementsService.delete_achievement(achievement)
+        if err:
+            return flash(err)
+        flash('Успешно удалено')
+        resp = make_response(
+            redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
+        )
+        return resp
