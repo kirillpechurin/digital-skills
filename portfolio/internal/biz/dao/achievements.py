@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Tuple
 
 from sqlalchemy import insert, delete
@@ -57,23 +58,27 @@ class AchievementsDao(BaseDao):
 
     def get_by_events_id(self, events_id: int):
         with self.session() as sess:
-            row = sess.query(
+            data = sess.query(
                 Achievements._id.label('achievements_id'),
                 Achievements._name.label('achievements_name'),
                 Achievements._points.label('achievements_points'),
                 Achievements._nomination.label('achievements_nomination'),
             ).where(
                 Achievements._events_id == events_id
-            ).first()
-
-        row = dict(row)
-        return AchievementsDeserializer.deserialize(row, DES_FROM_DB_DETAIL_ACHIEVEMENTS), None
+            ).all()
+        if not data:
+            return None, None
+        data = [dict(row) for row in data]
+        return AchievementsDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS), None
 
     def update(self, achievement_id: int, achievement: Achievements):
         with self.session() as sess:
             achievement_db = sess.query(Achievements).where(Achievements._id == achievement_id).first()
-            for column in achievement_db:
-                if not getattr(achievement, f"{column}") == '-1':
-                    achievement_db[f'{column}'] = getattr(achievement, f"{column}")
+            created_at = achievement_db._created_at
+            for column in achievement_db.__dict__:
+                if getattr(achievement, f"{column[1:]}", '-1') != '-1':
+                    setattr(achievement_db, f"{column}", getattr(achievement, f"{column[1:]}"))
+                setattr(achievement_db, '_edited_at', datetime.utcnow())
+                setattr(achievement_db, '_created_at', created_at)
             sess.commit()
-        return achievement
+        return achievement, None

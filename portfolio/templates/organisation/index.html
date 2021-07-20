@@ -44,43 +44,45 @@
     <div class="row">
         <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
         </div>
-        <div class="row col-5 col-sm-5 col-md-5 col-xl-5 col-lg-5">
-            <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <div class="col-5 col-sm-5 col-md-5 col-xl-5 col-lg-5">
+            <div class="row">
+                <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
                 <h5 class="d-flex justify-content-center mt-5">
                     Список сотрудников
                 </h5>
-                {% if list_teacher %}
-                <div class="accordion mt-5 mb-5" id="accordionExample">
-                    {% for teacher in list_teacher %}
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading{{ teacher.id }}">
-                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ teacher.id }}"
-                              aria-expanded="true" aria-controls="collapse{{ teacher.id }}">
-                          {{ teacher.name }} {{ teacher.surname }}, {{ teacher.specialty }}
-                      </button>
-                    </h2>
-                    <div id="collapse{{ teacher.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ teacher.id }}"
-                         data-bs-parent="#accordionExample">
-                      <div class="accordion-body">
-                        <form class="d-flex flex-row-reverse" action="{{ url_for('organisation/private_office.get_detail_teacher', teacher_id=teacher.id) }}">
-                          <button type="submit" class="btn btn-info">Подробнее</button>
-                        </form>
-                      </div>
+                {% if list_employee %}
+                    <div class="accordion mt-5 mb-5" id="accordionExample">
+                        {% for employee in list_employee %}
+                            <div class="accordion-item">
+                              <h2 class="accordion-header" id="heading{{ employee.id }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ employee.id }}"
+                                        aria-expanded="true" aria-controls="collapse{{ employee.id }}">
+                                    {{ employee.name }} {{ employee.surname }}, {{ employee.specialty }}
+                                </button>
+                              </h2>
+                              <div id="collapse{{ employee.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ employee.id }}"
+                                   data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                  <form method="get" class="d-flex flex-row-reverse" action="{{ url_for('organisation/private_office.get_detail_employee', employee_id=employee.id) }}">
+                                    <button type="submit" class="btn btn-info">Подробнее</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                  </div>
-            {% endfor %}
-            {% else %}
-            <h5 class="mt-5 text-center mb-5">У вас еще нет сотрудников, самое время добавить!</h5>
-            {% endif %}
+                {% else %}
+                    <h5 class="mt-5 text-center mb-5">У вас еще нет сотрудников, самое время добавить!</h5>
+                {% endif %}
                     <div class="mt-5 d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Добавить учителя
-                    </button>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Добавить учителя
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
-        <div class="col-5 col-sm-5 col-md-5 col-xl-5 col-lg-5">
+        <div class="col-3 col-sm-3 col-md-3 col-xl-3 col-lg-3">
             <img class="w-75" src="{{ url_for('static', filename='photos/organisation/icon_teacher.jpg') }}">
         </div>
     </div>
@@ -177,7 +179,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="{{ url_for('organisation/private_office.add_teacher') }}">
+        <form method="post" action="{{ url_for('organisation/private_office.add_employee') }}">
           <div class="mb-3">
             <input type="text" class="mt-2 form-control" name="login" id="login" required placeholder="Логин">
             <input type="text" class="mt-2 form-control" name="surname" id="surname" required placeholder="Фамилия">

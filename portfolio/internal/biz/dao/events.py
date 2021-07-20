@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime as dt
 
 from sqlalchemy import and_, insert
 
@@ -12,11 +13,15 @@ class EventsDao(BaseDao):
     def update(self, event_id: int, event: Events):
         with self.session() as sess:
             events_db = sess.query(Events).where(Events._id == event_id).first()
-            for column in events_db:
-                if not getattr(event, f"{column}") == '-1':
-                    events_db[f'{column}'] = getattr(event, f"{column}")
+            created_at = events_db._created_at
+            for column in events_db.__dict__:
+                if getattr(event, f"{column[1:]}", '-1') != '-1':
+                    setattr(events_db, f"{column}", getattr(event, f"{column[1:]}"))
+            setattr(events_db, '_edited_at', dt.utcnow())
+            setattr(events_db, '_created_at', created_at)
             sess.commit()
-        return event
+        return events_db, None
+
 
     def add(self, event: Events):
         sql = insert(
@@ -27,7 +32,7 @@ class EventsDao(BaseDao):
             date_event=event.date_event,
             hours=event.hours,
             skill=event.skill,
-            organisation_id=event.organisation_id
+            organisation_id=event.organisation.id
         ).returning(
             Events._id.label('events_id'),
             Events._created_at.label('events_created_at'),

@@ -29,6 +29,7 @@ def register(account_role_id: int = None,
     if request.method == 'POST':
         organisation = None
         parent = None
+        print(request.form)
         if account_role_id == 1:  # Organisation
             errors = RegisterOrganisationSchema().validate(dict(
                 name=request.form.get('name'),

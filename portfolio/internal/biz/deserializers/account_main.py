@@ -24,7 +24,8 @@ class AccountMainDeserializer(BaseDeserializer):
     def _des_from_register(account_main_dict):
         return AccountMain(
             name=account_main_dict.get('name'),
-
+            password=account_main_dict.get('password'),
+            email=account_main_dict.get('email')
         )
 
     @staticmethod

@@ -26,11 +26,11 @@ class EmployeeDeserializer(BaseDeserializer):
     def _des_from_db_all_employee(data):
         return [
             Employee(
-                id=row.get('teacher_id'),
-                login=row.get('teacher_login'),
-                name=row.get('teacher_name'),
-                surname=row.get('teacher_surname'),
-                specialty=row.get('teacher_specialty'),
+                id=row.get('employee_id'),
+                login=row.get('employee_login'),
+                name=row.get('employee_name'),
+                surname=row.get('employee_surname'),
+                specialty=row.get('employee_specialty'),
             ) for row in data
         ]
 

@@ -10,13 +10,6 @@ from portfolio.models.organisation import Organisation
 
 
 class Employee(AbstractModel):
-    """
-    login VARCHAR(150) NOT NULL UNIQUE,
-    name VARCHAR(150) NOT NULL,
-    surname VARCHAR(150) NOT NULL,
-    specialty VARCHAR(150) NOT NULL,
-    organisation_id INTEGER REFERENCES organisation(id) ON DELETE CASCADE
-    """
     __tablename__ = "employee"
     _login = Column(name='login', type_=String, nullable=False, unique=True)
     _name = Column(name='name', type_=String, nullable=False)

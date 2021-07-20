@@ -97,7 +97,12 @@ def edit_employee(auth_account_main_id: int, organisation_id: int, employee_id: 
             return json.dumps(err)
         flash('Сотрудник успешно обновлен!')
         response = make_response(
-            redirect(url_for('organisation/private_office.main_page'))
+            redirect(
+                url_for(
+                    'organisation/private_office.get_detail_employee',
+                    employee_id=employee_id
+                )
+            )
         )
         return response
 
@@ -128,7 +133,6 @@ def get_detail_employee(auth_account_main_id: int, organisation_id: int, employe
         info_organisation, err = OrganisationService.get_by_id(organisation.id)
         if err:
             return json.dumps(err)
-
         employee = Employee(id=employee_id)
         employee, err = EmployeeService.get_by_employee_id(employee)
         if err:

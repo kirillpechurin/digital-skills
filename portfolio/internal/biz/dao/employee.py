@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import insert, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
@@ -16,21 +18,24 @@ class EmployeeDao(BaseDao):
                 Employee._name.label('employee_name'),
                 Employee._surname.label('employee_surname'),
                 Employee._specialty.label('employee_specialty'),
-            ).where(Employee._organisation_id == organisation_id).all()
+            ).where(
+                Employee._organisation_id == organisation_id
+            ).all()
         if not data:
             return None, None
         data = [dict(row) for row in data]
+        print(data)
         return EmployeeDeserializer.deserialize(data, DES_FROM_DB_ALL_EMPLOYEE), None
 
     def add(self, employee: Employee):
         sql = insert(
             Employee
         ).values(
-            Employee._login,
-            Employee._name,
-            Employee._surname,
-            Employee._organisation_id,
-            Employee._specialty,
+            login=employee.login,
+            name=employee.name,
+            surname=employee.surname,
+            organisation_id=employee.organisation.id,
+            specialty=employee.specialty,
         ).returning(
             Employee._id.label('employee_id'),
             Employee._created_at.label('employee_created_at'),
@@ -40,19 +45,22 @@ class EmployeeDao(BaseDao):
             row = sess.execute(sql).first()
             sess.commit()
         row = dict(row)
-        employee.id = row['id']
-        employee.created_at = row['created_at']
-        employee.edited_at = row['edited_at']
+        employee.id = row['employee_id']
+        employee.created_at = row['employee_created_at']
+        employee.edited_at = row['employee_edited_at']
         return employee, None
 
     def update(self, employee_id: int, employee: Employee):
         with self.session() as sess:
             employee_db = sess.query(Employee).where(Employee._id == employee_id).first()
-            for column in employee_db:
-                if not getattr(employee, f"{column}") == '-1':
-                    employee_db[f'{column}'] = getattr(employee, f"{column}")
+            created_at = employee_db._created_at
+            for column in employee_db.__dict__:
+                if getattr(employee, f"{column[1:]}", '-1') != '-1':
+                    setattr(employee_db, f"{column}", getattr(employee, f"{column[1:]}"))
+            setattr(employee_db, '_edited_at', datetime.utcnow())
+            setattr(employee_db, '_created_at', created_at)
             sess.commit()
-        return employee
+        return employee, None
 
     def remove_by_id(self, employee_id: int):
         sql = delete(
@@ -71,8 +79,11 @@ class EmployeeDao(BaseDao):
                 Employee._name.label('employee_name'),
                 Employee._surname.label('employee_surname'),
                 Employee._specialty.label('employee_specialty'),
-            ).where(Employee._id == employee_id).first()
+            ).where(
+                Employee._id == employee_id
+            ).first()
         if not row:
             return None, None
         row = dict(row)
+        print(row)
         return EmployeeDeserializer.deserialize(row, DES_FROM_DB_DETAIL_EMPLOYEE), None

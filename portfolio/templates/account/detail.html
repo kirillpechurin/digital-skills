@@ -34,7 +34,7 @@
         <div class="row col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
             <h5>Логин: {{ account_main.email }}</h5>
             <h5>Имя: {{ account_main.name }}</h5>
-            <h5>Роль:{% if account_main.account_role.id == 1 %} Родитель {% elif account_main.account_role.id == 2 %} Организация {% endif %}</h5>
+            <h5>Роль:{% if account_main.account_role.id == 1 %} Организация {% elif account_main.account_role.id == 2 %} Родитель {% endif %}</h5>
 
             {% if not account_main.is_confirmed %}
                 <button class="mt-5 bg-info">
