@@ -8,6 +8,7 @@ from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, 
     DES_FOR_EDIT_EMPLOYEE
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT
 from portfolio.internal.biz.services.achievements import AchievementsService
+from portfolio.internal.biz.services.achievements_child import AchievementsChildService
 from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
@@ -19,6 +20,8 @@ from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEm
 from portfolio.internal.biz.validators.events import AddEventSchema
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
+from portfolio.models.achievements import Achievements
+from portfolio.models.achievements_child import AchievementsChild
 from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.employee import Employee
 from portfolio.models.events import Events
@@ -324,6 +327,25 @@ def update_complete_event_for_child(children_org_id: int, auth_account_main_id: 
         if err:
             return None, err
         flash('Успешно обнолено!')
+        resp = make_response(
+            redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
+        )
+        return resp
+
+
+@private_office_organisation.route('/learners/<int:children_org_id>/add_achievement_for_child', methods=['POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def add_achievement_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int):
+    if request.method == 'POST':
+        print(request.headers.get("Referer"))
+        achievements_child = AchievementsChild(
+            point=request.form.get('point'),
+            achievements=Achievements(id=request.form.get('achievement_id')),
+            children_organisation=ChildrenOrganisation(id=children_org_id)
+        )
+        achievements_child, err = AchievementsChildService.add_achievement(achievements_child)
+        if err:
+            return json.dumps(err)
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
