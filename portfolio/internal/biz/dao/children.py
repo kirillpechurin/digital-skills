@@ -1,3 +1,5 @@
+from sqlalchemy import insert
+
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILDREN, \
     DES_FROM_DB_INFO_CHILD
@@ -6,6 +8,27 @@ from portfolio.models.parents import Parents
 
 
 class ChildrenDao(BaseDao):
+
+    def add(self, children: Children):
+        sql = insert(
+            Children
+        ).values(
+            parents_id=children.parents_id,
+            name=children.name,
+            surname=children.surname,
+            date_born=children.date_born,
+        ).returning(
+            Children._id.label('children_id'),
+            Children._created_at.label('children_created_at'),
+            Children._edited_at.label('children_edited_at'),
+        )
+        with self.session() as sess:
+            row = sess.execute(sql).first()
+            sess.commit()
+        children.id = row['id']
+        children.created_at = row['created_at']
+        children.edited_at = row['edited_at']
+        return children, None
 
     def get_all_by_parents_id(self, children: Children):
         with self.session() as sess:

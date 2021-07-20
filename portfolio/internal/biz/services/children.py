@@ -25,3 +25,10 @@ class ChildrenService:
             return None, err
 
         return children, None
+
+    @staticmethod
+    def add_child(children: Children):
+        children, err = ChildrenDao().add(children)
+        if err:
+            return None, err
+        return children, None

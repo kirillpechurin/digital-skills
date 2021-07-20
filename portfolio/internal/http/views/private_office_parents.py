@@ -3,12 +3,12 @@ from datetime import datetime, date
 from flask import Blueprint, request, json, make_response, render_template, url_for, flash
 from werkzeug.utils import redirect
 
-from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FOR_EDIT_CHILD
+from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FOR_EDIT_CHILD, DES_FOR_ADD_CHILD
 from portfolio.internal.biz.services.achievements_child import AchievementsChildService
 from portfolio.internal.biz.services.children import ChildrenService
 from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
 from portfolio.internal.biz.services.events_child import EventsChildService
-from portfolio.internal.biz.validators.children import EditChildSchema
+from portfolio.internal.biz.validators.children import EditChildSchema, AddChildrenSchema
 from portfolio.internal.http.wrappers.account_role import check_account_role_parents_and_login_required
 from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
@@ -142,8 +142,8 @@ def progress(children_id: int, auth_account_main_id: int, parent_id: int):
 
 
 @private_office_parents.route('/progress/<int:children_id>/edit_children', methods=['POST'])
-@check_account_role_parents_and_login_required
-def edit_children(auth_account_main_id: int, children_id: int):
+@get_parent_id_and_acc_id_with_confirmed_email
+def edit_children(auth_account_main_id: int, children_id: int, parent_id: int):
     if request.method == 'POST':
         errors = EditChildSchema().validate(dict(name=request.form['name'],
                                                  surname=request.form['surname'],
@@ -165,3 +165,26 @@ def edit_children(auth_account_main_id: int, children_id: int):
             )
         )
         return resp
+
+
+@private_office_parents.route('/delete_children/<int:children_id>', methods=['POST'])
+@get_parent_id_and_acc_id_with_confirmed_email
+def delete_child(auth_account_main_id: int, children_id: int, parent_id: int):
+    if request.method == 'POST':
+        errors = AddChildrenSchema().validate(dict(name=request.form['name'],
+                                                   surname=request.form['surname'],
+                                                   date_born=request.form['date_born']))
+        if errors:
+            return json.dumps(errors)
+
+        children = ChildrenDeserialize.deserialize(request.form, DES_FOR_ADD_CHILD)
+        children.parents = Parents(id=parent_id)
+
+        children, err = ChildrenService.add_child(children)
+        if err:
+            return json.dumps(err)
+
+        response = make_response(redirect(url_for("parents/private_office.index")))
+        flash("Успешно добавлен")
+        return response
+
