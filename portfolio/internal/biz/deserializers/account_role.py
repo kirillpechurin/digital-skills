@@ -19,8 +19,8 @@ class AccountRoleDeserializer(BaseDeserializer):
     def _ser_for_get_list_account_role(data) -> List[AccountRole]:
         return [
             AccountRole(
-                id=data[i]['account_role_id'],
-                name=data[i]['account_role_name']
+                id=row['account_role_id'],
+                name=row['account_role_name']
             )
-            for i in range(len(data))
+            for row in data
         ]

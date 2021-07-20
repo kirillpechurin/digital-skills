@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+      <div class="info-event row col-7 col-sm-7 col-md-7 col-xl-7 col-lg-7 mt-5">
+        <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">Тип события</th>
+              <th scope="col">Название</th>
+              <th scope="col">Дата события</th>
+              <th scope="col">Количество часов</th>
+              <th scope="col">Приобретаемый навык</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>{{ event.type }} </td>
+              <td>{{ event.name }}</td>
+              <td>{{ event.date_event }}</td>
+              <td>{{ event.hours }}</td>
+              <td>{{ event.skill }}</td>
+            </tr>
+            </tbody>
+          </table>
+      </div>
+      <div class="link-event row col-5 col-sm-5 col-md-5 col-xl-5 col-lg-5 mt-5 d-flex flex-row-reverse">
+          <img class="w-75" src="{{ url_for('static', filename='photos/organisation/icon_events.png') }}">
+      </div>
+    </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    </div>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex justify-content-center">
+      <button style="width: 300px;" type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#EditEvent">
+        Редактировать
+      </button>
+    </div>
+  </div>
+</div>
+{% if list_achievements %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+        <h5 class="mb-3 mt-3">Достижения, которые можно получить при участии:</h5>
+        <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">Название</th>
+              <th scope="col">Номинация</th>
+              <th scope="col">Список мест</th>
+              <th scope="col">Удаление</th>
+              <th scope="col">Изменение</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for achievement in list_achievements %}
+            <tr>
+              <td>{{ achievement.name }} </td>
+              <td>{{ achievement.nomination }}</td>
+              <td>{{ achievement.points[0] }}-{{ achievement.points[-1] }}</td>
+              <td>
+                  <form method="post" action="{{ url_for('organisation/private_office.delete_achievement', achievement_id=achievement.id, events_id=event.id) }}">
+                      <button class="btn btn-info">
+                          Удалить
+                      </button>
+                  </form>
+              </td>
+              <td>
+                  <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#EditAchievement{{ achievement.id }}">
+                        Редактировать
+                  </button>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="bg-light text-center">К этому мероприятию не добавлено достижений</h5>
+      </div>
+    </div>
+</div>
+{% endif %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex justify-content-center">
+      <button style="width: 300px;" type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#AddAchievement">
+        Добавить достижение!
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="AddAchievement" tabindex="-1" aria-labelledby="AddAchievementLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Добавление достижения</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('organisation/private_office.add_achievement', events_id=event.id) }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control"   name="name" id="name_achievement" required placeholder="Наименование">
+            <input type="text" class="mt-2 form-control"   name="nomination" id="nomination_achievement" required placeholder="Номинация">
+            <input type="number" class="mt-2 form-control" name="points" id="points_achievement" required placeholder="Количество мест">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="EditEvent" tabindex="-1" aria-labelledby="AddAchievementLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_1">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_1">Редактирование события</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          Введите только те поля, которые хотите отредактировать
+        <form id="edit" method="post" action="{{ url_for('organisation/private_office.edit_event', events_id=event.id) }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" value="{{ event.type }}" name="type" id="type"  placeholder="Тип события">
+            <input type="text" class="mt-2 form-control" value="{{ event.name }}" name="name" id="name"  placeholder="Название">
+            <input type="date" class="mt-2 form-control" value="{{ event.date_event }}" name="date_event" id="date_event"  placeholder="Дата">
+            <input type="number" class="mt-2 form-control" value="{{ event.hours }}" name="hours" id="hours"  placeholder="Количество часов">
+            <input type="text" class="mt-2 form-control" value="{{ event.skill }}" name="skill" id="skill"  placeholder="Прокачиваемый навык">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% if list_achievements %}
+{% for achievement in list_achievements %}
+<div class="modal fade" id="EditAchievement{{ achievement.id }}" tabindex="-1" aria-labelledby="AddAchievementLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_{{ achievement.id }}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_{{ achievement.id }}">Редактирование события</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          Введите только те поля, которые хотите отредактировать
+        <form method="post" action="{{ url_for('organisation/private_office.edit_achievement', events_id=event.id, achievement_id=achievement.id) }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" id="name{{ achievement.id }}"        value="{{ achievement.name }}"  name="name" placeholder="Наименование">
+            <input type="text" class="mt-2 form-control" id="nomination{{ achievement.id }}"  value="{{ achievement.nomination }}"  name="nomination" placeholder="Номинация">
+            <input type="number" class="mt-2 form-control" id="points{{ achievement.id }}"    value="{{ achievement.points[-1] }}"  name="points" placeholder="Количество мест">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+</body>
+</html>

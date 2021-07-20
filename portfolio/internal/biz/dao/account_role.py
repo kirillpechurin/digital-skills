@@ -14,6 +14,7 @@ class AccountRoleDao(BaseDao):
         print(row)
         if not row:
             return None, None
+        row = dict(row)
         return AccountRole(id=row['account_role_id'],
                            name=row['account_role_name']), None
 
@@ -23,5 +24,5 @@ class AccountRoleDao(BaseDao):
                 AccountRole._id.label("account_role_id"),
                 AccountRole._name.label("account_role_name")
             ).all()
-        print(data)
+        data = [dict(row) for row in data]
         return AccountRoleDeserializer.deserialize(data, SER_FOR_GET_LIST_ACCOUNT_ROLE), None

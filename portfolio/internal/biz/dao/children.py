@@ -1,3 +1,5 @@
+import psycopg2
+import sqlalchemy
 from sqlalchemy import insert
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
@@ -13,7 +15,7 @@ class ChildrenDao(BaseDao):
         sql = insert(
             Children
         ).values(
-            parents_id=children.parents_id,
+            parents_id=children.parents.id,
             name=children.name,
             surname=children.surname,
             date_born=children.date_born,
@@ -23,11 +25,18 @@ class ChildrenDao(BaseDao):
             Children._edited_at.label('children_edited_at'),
         )
         with self.session() as sess:
-            row = sess.execute(sql).first()
-            sess.commit()
-        children.id = row['id']
-        children.created_at = row['created_at']
-        children.edited_at = row['edited_at']
+            try:
+                row = sess.execute(sql).first()
+                sess.commit()
+            except sqlalchemy.exc.IntegrityError as exception:
+                if str(exception.orig)[48:48+len("unique_children")] == 'unique_children':
+                    return None, "Ребенок уже добавлен"
+                else:
+                    raise exception
+        row = dict(row)
+        children.id = row['children_id']
+        children.created_at = row['children_created_at']
+        children.edited_at = row['children_edited_at']
         return children, None
 
     def get_all_by_parents_id(self, children: Children):
@@ -43,6 +52,7 @@ class ChildrenDao(BaseDao):
             ).where(Parents._id == children.parents.id).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return ChildrenDeserialize.deserialize(data, DES_FROM_DB_INFO_CHILDREN), None
 
     def get_by_id(self, children_id: int):
@@ -55,6 +65,7 @@ class ChildrenDao(BaseDao):
             ).where(Children._id == children_id).first()
         if not row:
             return None, "Сначала добавьте ребенка"
+        row = dict(row)
         return ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILD), None
 
     def update(self, children_id: int, children: Children):

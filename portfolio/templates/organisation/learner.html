@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6 mt-5">
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>{{ children_org.children.name }} {{ children_org.children.surname }}</h4>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>Дата рождения: {{ children_org.children.date_born }}</h4>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>Возраст: 9 лет</h4>
+          </div>
+            <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>Группа/Класс: 4</h4>
+          </div>
+          <div class="col-9 col-sm-9 col-md-9 col-lg-9 col-xl-9 mt-5">
+            <h4>Количество мероприятий, посещенных ребенком:
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ count_complete_events }}
+              </span>
+            </h4>
+          </div>
+          <h4 class="mt-4">Мероприятия, где зарегистрирован ребенок:
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ count_active_events }}
+              </span>
+            </h4>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+            <h4>Общее количество часов участия
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ sum_hours }}
+              </span></h4>
+          </div>
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+              <img class="w-50" src="{{ url_for('static', filename='photos/parents/icon_child.png') }}">
+        </div>
+  </div>
+</div>
+{% if activity_child.list_active_events %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <strong>Активные мероприятия</strong>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Тип мероприятия</th>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Приобретаемые навыки</th>
+            <th scope="col">Время</th>
+            <th scope="col">Изменение статуса</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for active_event in activity_child.list_active_events %}
+          <tr>
+            <td>{{ active_event.events.type }}</td>
+            <td>{{ active_event.events.name }}</td>
+            <td>{{ active_event.events.date_event }}</td>
+            <td>{{ active_event.events.skill }}</td>
+            <td>+{{ active_event.events.hours }} часов</td>
+            <td><button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#UpdateStatusEventForChild{{ active_event.id }}-{{ active_event.events.id }}-{{ active_event.children_organisation.id }}">Редактировать</button></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+<!--        <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 d-flex justify-content-center">-->
+<!--        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModalForAddEvent">-->
+<!--            Добавить участие в мероприятии-->
+<!--        </button>-->
+<!--        </div>-->
+    </div>
+  </div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="bg-light text-center">Ребенок не зарегистрирован ни на одно ваше мероприятие</h5>
+      </div>
+    </div>
+</div>
+{% endif %}
+{% if activity_child.list_completed_events %}
+  <div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <strong>Участие в ваших мероприятиях:</strong>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Тип мероприятия</th>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Приобретаемые навыки</th>
+            <th scope="col">Время</th>
+            <th scope="col">Изменение статуса</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for complete_event in activity_child.list_completed_events  %}
+          <tr>
+            <td>{{ complete_event.events.type }}</td>
+            <td>{{ complete_event.events.name }}</td>
+            <td>{{ complete_event.events.date_event }}</td>
+            <td>{{ complete_event.events.skill }}</td>
+            <td>+{{ complete_event.events.hours }} часов</td>
+            <td><button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModalForEditCompleteEvent{{ complete_event.id }}-{{ complete_event.events.id }}-{{ complete_event.children_organisation.id }}">Редактировать</button></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+        <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 d-flex justify-content-center">
+        </div>
+    </div>
+  </div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="bg-light text-center">Ребенок не прошел еще ни одно мероприятие</h5>
+      </div>
+    </div>
+</div>
+{% endif %}
+{% if activity_child.list_achievements_child %}
+  <div class="container-fluid mt-5 mb-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <strong>Достижения: </strong>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Номинация</th>
+            <th scope="col">Место</th>
+            <th scope="col">Редактирование</th>
+            <th scope="col">Удаление</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for achievement_child in activity_child.list_achievements_child %}
+          <tr>
+            <td>{{ achievement_child.achievements.events.name }}</td>
+            <td>{{ achievement_child.achievements.events.date_event }}</td>
+            <td>{{ achievement_child.achievements.nomination }}</td>
+            <td>{{ achievement_child.point }}</td>
+            <td><button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModalForEditAchievement{{ achievement_child.id }}">Редактировать</button></td>
+            <td>
+              <form method="post" action="{{ url_for('organisation/private_office.delete_achievement_for_child', children_org_id=children_org.id, achievement_child_id=achievement_child.id) }}">
+                <button type="submit" class="btn btn-info">
+                Удалить
+              </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+        <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 d-flex justify-content-center">
+        </div>
+    </div>
+  </div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="bg-light text-center">У ребенка пока нет достижений</h5>
+      </div>
+    </div>
+</div>
+{% endif %}
+{% if activity_child.list_completed_events and list_achievements_for_completed_events %}
+<div class="container-fluid mb-5">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex justify-content-center">
+      <button style="width: 300px;" type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ModalForAddAchievement">
+        Добавить достижение!
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if activity_child.list_active_events %}
+{% for active_event in activity_child.list_active_events %}
+<div class="modal fade" id="UpdateStatusEventForChild{{ active_event.id }}-{{ active_event.events.id }}-{{ active_event.children_organisation.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_{{ active_event.id }}-{{ active_event.events.id }}-{{ active_event.children_organisation.id }}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_{{ active_event.id }}-{{ active_event.events.id }}-{{ active_event.children_organisation.id }}">Изменить статус события для ребенка</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('organisation/private_office.update_status_event_for_child', children_org_id=children_org.id, events_id=active_event.events.id) }}">
+          <div class="mb-3">
+            <select name="status_event" class="form-select" aria-label="Default select example">
+              <option selected>Выберите статус</option>
+              <option name="success" value="True">Успешно прошел</option>
+            </select>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+{% if activity_child.list_completed_events %}
+{% for complete_event in activity_child.list_completed_events %}
+<div class="modal fade" id="ModalForEditCompleteEvent{{ complete_event.id }}-{{ complete_event.events.id }}-{{ complete_event.children_organisation.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_{{ complete_event.id }}-{{ complete_event.events.id }}-{{ complete_event.children_organisation.id }}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_{{ complete_event.id }}-{{ complete_event.events.id }}-{{ complete_event.children_organisation.id }}">Изменить количество часов</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('organisation/private_office.update_complete_event_for_child', children_org_id=complete_event.children_organisation.id, events_id=complete_event.events.id) }}">
+          <div class="mb-3">
+            <input type="number" min="1" max="81" class="mt-2 form-control" value="{{ complete_event.events.hours }}" name="hours" id="number_hour" required placeholder="Количество часов">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+{% if activity_child.list_completed_events and list_achievements_for_completed_events %}
+<div class="modal fade" id="ModalForAddAchievement" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_2">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_2">Добавить достижение</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form_for_add_achievement_for_child" method="post" action="{{ url_for('organisation/private_office.add_achievement_for_child', children_org_id=children_org.id) }}">
+          <div class="mb-3">
+            <select form="form_for_add_achievement_for_child" name="achievement_id" class="form-select" aria-label="Default select example">
+              <option selected>Выберите событие</option>
+              {% for achievement in list_achievements_for_completed_events %}
+                <option name="achievement_id" value="{{ achievement.id }}">{{ achievement.nomination }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" min="1" class="mt-2 form-control" name="point" id="point" required placeholder="Место">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+
+{% if activity_child.list_achievements_child %}
+{% for achievement_child in activity_child.list_achievements_child %}
+<div class="modal fade" id="ModalForEditAchievement{{ achievement_child.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_{{ achievement_child.id }}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_{{ achievement_child.id }}">Редактировать достижение</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('organisation/private_office.update_achievement_child', children_org_id=children_org.id, achievement_child_id=achievement_child.id) }}">
+          <div class="mb-3">
+            <select name="achievement_id" class="form-select" aria-label="Default select example">
+              <option selected value="{{ achievement_child.achievements.id }}">{{ achievement_child.achievements.nomination }}</option>
+              {% for achievement in list_achievements_for_completed_events %}
+              {% if achievement.id != achievement_child.achievements.id %}
+                <option name="achievement_id" value="{{ achievement.id }}">{{ achievement.nomination }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+            <input type="number" min="1" class="mt-2 form-control" value="{{ achievement_child.point }}" name="point" required placeholder="Место">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="modal fade" id="ModalForAddEvent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop_1">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel_1">Добавить участие в мероприятии</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="http://localhost:8000/private_office_organisation/add_event">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" id="type_event" required placeholder="Тип мероприятия">
+            <input type="text" class="mt-2 form-control" id="name_event" required placeholder="Название мероприятия">
+            <input type="number" class="mt-2 form-control" id="hours" required placeholder="Часы">
+            <input type="date" class="mt-2 form-control" id="date_event" required placeholder="Дата">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

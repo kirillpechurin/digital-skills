@@ -23,6 +23,7 @@ class AuthCodeDao(BaseDao):
             sess.commit()
         if not row:
             return None, None
+        row = dict(row)
         auth_code.id = row['auth_code_id']
         auth_code.created_at = row['auth_code_created_at']
         auth_code.edited_at = row['auth_code_edited_at']
@@ -37,6 +38,7 @@ class AuthCodeDao(BaseDao):
             ).where(AuthCode._code == auth_code.code).first()
         if not row:
             return None, None
+        row = dict(row)
         auth_code.id = row['auth_code_id']
         auth_code.edited_at = row['auth_code_edited_at']
         auth_code.account_main = AccountMain(id=row['auth_code_account_main_id'])

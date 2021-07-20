@@ -24,6 +24,7 @@ class ParentsDao(BaseDao):
         print(row)
         if not row:
             return None, None
+        row = dict(row)
         parent.id = row['parents_id']
         parent.created_at = row['parents_created_at']
         parent.edited_at = row['parents_edited_at']
@@ -38,6 +39,7 @@ class ParentsDao(BaseDao):
             ).where(Parents._account_main_id == account_main_id).first()
         if not row:
             return None, None
+        row = dict(row)
         parents = Parents(
             id=row.get('parents_id'),
             name=row.get('parents_name'),

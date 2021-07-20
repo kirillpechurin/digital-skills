@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_parent.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6 mt-5">
+          <div class="mt-5 col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+            Ваши дети
+          </div>
+          {% if context %}
+          <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 accordion" id="accordionExample">
+            {% for item_context in context %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{{ item_context.children_info.id }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ item_context.children_info.id }}"
+                        aria-expanded="true" aria-controls="collapse{{ item_context.children_info.id }}">
+                  {{ item_context.children_info.name }} {{ item_context.children_info.surname }}
+                </button>
+              </h2>
+              <div id="collapse{{ item_context.children_info.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ item_context.children_info.id }}"
+                   data-bs-parent="#accordionExample">
+                {% if item_context.events_info %}
+                <div class="row accordion-body mb-3">
+                  {% for event_info in item_context.events_info %}
+                  <div class="mt-3 col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                      {{ event_info.events.name }}
+                  </div>
+                  <div class="mt-3 col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 d-flex justify-content-end">
+                    + {{ event_info.events.hours }} ч.
+                  </div>
+                  {% endfor %}
+                </div>
+                {% else %}
+                <div class="row accordion-body mb-3">
+                <div style="margin-left: 20px;" class="mt-1 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    У ребенка нет активности
+                  </div>
+                </div>
+                {% endif %}
+                <div class="mt-3 mb-3 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 d-flex flex-row-reverse">
+                    <a class="btn btn-info" href=" {{ url_for('parents/private_office.progress', children_id=item_context.children_info.id) }} ">Подробнее</a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+                <h5 class="bg-light" style="width:550px; border-radius: 10px;">Детей пока что не добавлено, самое время сделать это!</h5>
+            </div>
+            {% endif %}
+
+          <div class="row">
+            <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+            </div>
+            <div class="mt-5 col-4 col-sm-4 col-md-4 col-xl-4 col-lg4">
+              <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Добавить ребенка
+              </button>
+            </div>
+            <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2 d-flex justify-content-end mt-5">
+            <img src="{{ url_for('static', filename='photos/parents/main_page_parents.png') }}">
+      </div>
+</div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Добавить ребенка</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('parents/private_office.add_child') }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" name="surname" id="surname" required placeholder="Фамилия">
+            <input type="text" class="mt-2 form-control" name="name" id="name" required placeholder="Имя">
+            <input type="date" class="mt-2 form-control" name="date_born" id="date_born" required placeholder="Дата рождения">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>
+

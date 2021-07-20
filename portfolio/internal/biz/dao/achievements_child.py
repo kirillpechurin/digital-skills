@@ -34,6 +34,7 @@ class AchievementsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS), None
 
     def get_by_children_id(self, children_id: int):
@@ -62,6 +63,7 @@ class AchievementsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID), None
 
     def add_achievement(self, achievements_child: AchievementsChild):
@@ -79,6 +81,7 @@ class AchievementsChildDao(BaseDao):
         with self.session() as sess:
             row = sess.execute(sql).first()
             sess.commit()
+        row = dict(row)
         achievements_child.id = row['id']
         achievements_child.edited_at = row['edited_at']
         achievements_child.created_at = row['created_at']

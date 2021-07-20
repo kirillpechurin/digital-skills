@@ -1,7 +1,7 @@
 from sqlalchemy import and_, insert
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.events_child import DES_FROM_DB_GET_ACTIVE_EVENTS, EventsChildDeserializer, \
+from portfolio.internal.biz.deserializers.events_child import DES_FROM_DB_GET_EVENTS, EventsChildDeserializer, \
     DES_FROM_DB_GET_EVENTS, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION
 from portfolio.models.children import Children
 from portfolio.models.children_organisation import ChildrenOrganisation
@@ -34,6 +34,7 @@ class EventsChildDao(BaseDao):
             ).where(and_(EventsChild._status is True, ChildrenOrganisation._children_id == children_id)).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
 
     def get_completed_events_by_child_id_with_date(self, children_id: int, gap_for_skill):
@@ -63,6 +64,7 @@ class EventsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
 
     def get_active_events_by_child_id(self, children_id):
@@ -86,6 +88,7 @@ class EventsChildDao(BaseDao):
             ).where(and_(EventsChild._status is False, ChildrenOrganisation._children_id == children_id)).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
 
     def add_by_request(self, events_child: EventsChild):
@@ -104,7 +107,7 @@ class EventsChildDao(BaseDao):
         sess = self.sess_transaction
         row = sess.execute(sql).first()
         sess.commit()
-
+        row = dict(row)
         events_child.id = row['events_child_id']
         events_child.created_at = row['events_child_created_at']
         events_child.edited_at = row['events_child_edited_at']
@@ -142,6 +145,7 @@ class EventsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION), None
 
     def get_completed_events_by_child_organisation_id(self, children_organisation_id: int = None):
@@ -176,6 +180,7 @@ class EventsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION), None
 
     def update_status(self, events_child: EventsChild):

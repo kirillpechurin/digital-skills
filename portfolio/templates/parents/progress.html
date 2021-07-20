@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_parent.html' %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6 mt-5">
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>{{ children.name }}  {{ children.surname }}</h4>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>Дата рождения: {{ children.date_born }}</h4>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-xl-12 col-lg-12 mt-3">
+            <h4>Возраст: 9 лет</h4>
+          </div>
+          <div class="col-9 col-sm-9 col-md-9 col-lg-9 col-xl-9 mt-5">
+            <h4>Количество мероприятий, посещенных ребенком:
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ count_completed_events }}
+              </span>
+            </h4>
+            <h4 class="mt-4">Мероприятия, где зарегистрирован ребенок:
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ count_active_events }}
+              </span>
+            </h4>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+            <h4>
+              Общее количество часов участия
+              <span style="border-radius: 10px;" class="bg-info m-2 p-2">
+                {{ all_hours }}
+              </span>
+            </h4>
+          </div>
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+              <img src="{{ url_for('static', filename='photos/parents/icon_child.png') }}">
+        </div>
+  </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-3 mb-5">
+          <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Редактировать информацию о ребенке
+          </button>
+      </div>
+    </div>
+</div>
+{% if active_events %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <strong>Активные мероприятия:</strong>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Организация</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Приобретаемые навыки</th>
+            <th scope="col">Время</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for active_event in active_events %}
+          <tr>
+            <td>{{ active_event.events.name }}</td>
+            <td>{{ active_event.children_organisation.organisation.name }}</td>
+            <td>{{ active_event.events.date_event }}</td>
+            <td>{{ active_event.events.skill }}</td>
+            <td>+{{ active_event.events.hours }} часов</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="text-center bg-light">Ребенок не зарегистрирован ни на одно мероприятие</h5>
+      </div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center align-items-center">
+        <a href="{{ url_for('main.list_organisation') }}" style="width: 500px;" class="btn btn-info">Зарегистрировать ребенка!</a>
+      </div>
+    </div>
+</div>
+{% endif %}
+{% if list_completed_events %}
+  <div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-10 col-sm-10 col-md-10 col-xl-10 col-lg-10">
+        <strong>Участие в мероприятиях:</strong>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Организация</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Приобретенные навыки</th>
+            <th scope="col">Время</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for complete_event in list_completed_events %}
+          <tr>
+            <td>{{ complete_event.events.name }}</td>
+            <td>{{ complete_event.children_organisation.organisation.name }}</td>
+            <td>{{ complete_event.events.date_event }}</td>
+            <td>{{ complete_event.events.skill }}</td>
+            <td>+{{ complete_event.events.hours }} часов</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="bg-light text-center">Ребенок не прошел еще ни одно мероприятие</h5>
+      </div>
+    </div>
+</div>
+{% endif %}
+{% if list_org %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+            <h5 class="d-flex justify-content-center mt-5">
+                Список организаций, в которых обучается ребенок
+            </h5>
+            <div class="accordion mt-5 mb-5" id="accordionExample">
+              {% for org in list_org %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ org.id }}">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ org.id }}"
+                          aria-expanded="true" aria-controls="collapse{{ org.id }}">
+                    {{ org.name }}
+                  </button>
+                </h2>
+                <div id="collapse{{ org.id }}" class="accordion-collapse collapse show" aria-labelledby="heading{{ org.id }}"
+                     data-bs-parent="#accordionExample">
+                  <div class="accordion-body">
+                    <form class="d-flex flex-row-reverse" action="{{ url_for('main.detail_organisation', organisation_id=org.id) }}">
+                      <button type="submit" class="btn btn-info">Подробнее</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 mt-5">
+          <div class="header d-flex justify-content-center bg-info" style="border: 2px solid; border-bottom: none; border-radius: 20px 20px 0 0;">
+            Апрель
+          </div>
+          <table class="table table-bordered" style="border: 2px solid;">
+            <thead>
+            <tr>
+              <th scope="col">Пн</th>
+              <th scope="col">Вт</th>
+              <th scope="col">Ср</th>
+              <th scope="col">Чт</th>
+              <th scope="col">Пт</th>
+              <th scope="col">Сб</th>
+              <th scope="col">Вс</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>29</td>
+              <td>30</td>
+              <td>31</td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>6</td>
+              <td>7</td>
+              <td>8</td>
+              <td>9</td>
+              <td>10</td>
+              <td>11</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>13</td>
+              <td>14</td>
+              <td>15</td>
+              <td>16</td>
+              <td>17</td>
+              <td>18</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td>20</td>
+              <td>21</td>
+              <td>22</td>
+              <td>23</td>
+              <td>24</td>
+              <td>25</td>
+            </tr>
+            <tr>
+              <td>26</td>
+              <td>27</td>
+              <td>28</td>
+              <td>29</td>
+              <td>30</td>
+              <td>1</td>
+              <td>2</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="row" style="border: 2px solid; border-top: none; border-radius: 0 0 20px 20px; margin-top: -18px; margin-right: 0px; margin-left: 0px;">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
+              1 событие
+            </div>
+            <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+              9:00-19:00
+            </div>
+            <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+              Public speaking за 10 часов
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+      </div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center">
+        <h5 style="width: 500px;" class="text-center bg-light">Ребенок не зарегистрирован ни в одной компании</h5>
+      </div>
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center align-items-center">
+        <a href="{{ url_for('main.list_organisation') }}" style="width: 500px;" class="btn btn-info">Зарегистрировать ребенка!</a>
+      </div>
+    </div>
+</div>
+{% endif %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+      Статистика проведенных часов по навыкам {% if gap_for_skill == 'year' %} за год {% elif gap_for_skill == 'half_year' %} за полгода {% elif gap_for_skill == 'month' %} за месяц {% else %} за все время {% endif %}
+      <!-- Example single danger button -->
+      <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Выберите промежуток
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_skill='all_time') }}">За все время</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_skill='year') }}">Год</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_skill='half_year') }}">Полгода</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_skill='month') }}">Месяц</a></li>
+        </ul>
+      </div>
+      {% if dict_by_unique_skill %}
+      <div class="row mt-3" style="margin-left: 20px;">
+        {% for key in dict_by_unique_skill %}
+        <div class="col-3 mt-2 col-sm-3 col-md-3 col-xl-3 col-lg-3">
+          {{ key }}
+        </div>
+        <div class="col-1 mt-2 col-sm-1 col-md-1 col-xl-1 col-lg-1">
+          {{ dict_by_unique_skill[key]['percent'] }}%
+        </div>
+        <div class="col-1 mt-1 col-sm-1 col-md-1 col-xl-1 col-lg-1">
+          {{ dict_by_unique_skill[key]['hours'] }} час
+        </div>
+        <div class="col-7 col-sm-7 col-md-7 col-xl-7 col-lg-7 d-flex align-items-center">
+          <hr style="height: 10px; width: 10px;" class="bg-{{ dict_by_unique_skill[key]['color'] }}">
+        </div>
+        {% endfor %}
+      </div>
+
+
+      <div class="progress mt-3 mb-5" style="border-radius: 25px;">
+        {% for key in dict_by_unique_skill %}
+      <div style="width: {{ dict_by_unique_skill[key]['percent'] }}%" class="progress-bar bg-{{ dict_by_unique_skill[key]['color'] }}"></div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="row mt-3" style="margin-left: 20px;">
+        <div class="col-3 mt-2 col-sm-3 col-md-3 col-xl-3 col-lg-3">
+          Пока что нет приобретенных навыков
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+      Статистика проведенных часов в организациях {% if gap_for_org == 'year' %} за год {% elif gap_for_org == 'half_year' %} за полгода {% elif gap_for_org == 'month' %} за месяц {% else %} за все время {% endif %}
+      <!-- Example single danger button -->
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Выберите промежуток
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_org='all_time') }}">За все время</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_org='year') }}">Год</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_org='half_year') }}">Полгода</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('parents/private_office.progress', children_id=children.id, gap_for_org='month') }}">Месяц</a></li>
+        </ul>
+      </div>
+      {% if dict_by_unique_organisation %}
+      {% for key in dict_by_unique_organisation %}
+      <div class="row mt-5" style="margin-left: 20px;">
+        <div class="col-3 col-sm-3 col-md-3 col-xl-3 col-lg-3">
+          {{ dict_by_unique_organisation[key]['name'] }}
+        </div>
+        <div class="col-1 col-sm-1 col-md-1 col-xl-1 col-lg-1">
+          {{ dict_by_unique_organisation[key]['percent'] }}%
+        </div>
+        <div class="col-1 col-sm-1 col-md-1 col-xl-1 col-lg-1">
+          {{ dict_by_unique_organisation[key]['hours'] }} час
+        </div>
+        <div class="col-7 col-sm-7 col-md-7 col-xl-7 col-lg-7">
+          <hr style="height: 10px; width: 10px;" class="bg-{{ dict_by_unique_organisation[key]['color'] }}">
+        </div>
+      </div>
+      {% endfor %}
+      <div class="progress mt-3 mb-5" style="border-radius: 25px;">
+        {% for key in dict_by_unique_organisation %}
+      <div style="width: {{ dict_by_unique_organisation[key]['percent'] }}%" class="progress-bar bg-{{ dict_by_unique_organisation[key]['color'] }}"></div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="row mt-3" style="margin-left: 20px;">
+        <div class="col-3 mt-2 col-sm-3 col-md-3 col-xl-3 col-lg-3">
+          Ребенок не зарегистрирован ни в одной организации
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <h5>Фокус проведенных часов за последнюю неделю</h5>
+      </div>
+      {% if max_focus_event %}
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+        <h4 class="text-info">{{ max_focus_event.skill }}</h4>
+        <h5 class="mt-3">{{ max_focus_event.event_type }} "{{ max_focus_event.event_name }}", {{ max_focus_event.hours }} часов</h5>
+      </div>
+      {% else %}
+      <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 mt-5">
+        <h4 class="text-info">За последнюю неделю ребенок нигде не участвовал</h4>
+      </div>
+      {% endif %}
+      <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <img src="{{ url_for('static', filename='photos/parents/icon_statistic_focus.png') }}">
+      </div>
+    </div>
+  </div>
+</div>
+{% if list_achievements_child %}
+<div class="container-fluid mb-5">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 mt-5">
+      <h5>Достижения:</h5>
+    </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Наименование мероприятия</th>
+            <th scope="col">Организация</th>
+            <th scope="col">Дата проведения</th>
+            <th scope="col">Номинация</th>
+            <th scope="col">Место</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for achievement_child in list_achievements_child %}
+          <tr>
+            <td>{{ achievement_child.achievements.events.name }}</td>
+            <td>{{ achievement_child.children_organisation.organisation.name }}</td>
+            <td>{{ achievement_child.achievements.events.date_event }}</td>
+            <td>{{ achievement_child.achievements.nomination }}</td>
+            <td>{{ achievement_child.point }}-ое место</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+{% else %}
+<div class="container-fluid mb-5">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 mt-5">
+      <h5>У ребенка пока нет достижений</h5>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Добавить ребенка</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('parents/private_office.edit_children', children_id=children.id) }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" value="{{ children.surname }}" name="surname" id="surname" required placeholder="Фамилия">
+            <input type="text" class="mt-2 form-control" value="{{ children.name }}" name="name" id="name" required placeholder="Имя">
+            <input type="date" class="mt-2 form-control" value="{{ children.date_born }}" name="date_born" id="date_born" required placeholder="Дата рождения">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Редактировать</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

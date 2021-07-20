@@ -19,6 +19,7 @@ class EmployeeDao(BaseDao):
             ).where(Employee._organisation_id == organisation_id).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EmployeeDeserializer.deserialize(data, DES_FROM_DB_ALL_EMPLOYEE), None
 
     def add(self, employee: Employee):
@@ -38,6 +39,7 @@ class EmployeeDao(BaseDao):
         with self.session() as sess:
             row = sess.execute(sql).first()
             sess.commit()
+        row = dict(row)
         employee.id = row['id']
         employee.created_at = row['created_at']
         employee.edited_at = row['edited_at']
@@ -72,4 +74,5 @@ class EmployeeDao(BaseDao):
             ).where(Employee._id == employee_id).first()
         if not row:
             return None, None
+        row = dict(row)
         return EmployeeDeserializer.deserialize(row, DES_FROM_DB_DETAIL_EMPLOYEE), None

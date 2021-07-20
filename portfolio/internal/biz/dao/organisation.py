@@ -29,6 +29,7 @@ class OrganisationDao(BaseDao):
         print(row)
         if not row:
             return None, None
+        row = dict(row)
         organisation.id = row['organisation_id']
         organisation.created_at = row['organisation_created_at']
         organisation.edited_at = row['organisation_edited_at']
@@ -45,6 +46,7 @@ class OrganisationDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return OrganisationDeserializer.deserialize(data, DES_FROM_DB_ALL_ORGANISATIONS), None
 
     def get_by_id(self, organisation_id: int):
@@ -58,6 +60,7 @@ class OrganisationDao(BaseDao):
             ).where(Organisation._id == organisation_id).first()
         if not row:
             return None, None
+        row = dict(row)
         return OrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_ORGANISATION), None
 
     def get_by_account_id(self, account_main_id: int):
@@ -75,6 +78,7 @@ class OrganisationDao(BaseDao):
             ).first()
         if not row:
             return None, None
+        row = dict(row)
         organisation = Organisation(
             id=row['organisation_id'],
             created_at=row['organisation_created_at'],

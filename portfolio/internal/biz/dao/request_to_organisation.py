@@ -36,6 +36,7 @@ class RequestToOrganisationDao(BaseDao):
             sess.commit()
         if not row:
             return None, "Не успешно"
+        row = dict(row)
         request_to_organisation.id = row['request_to_organisation_id']
         request_to_organisation.created_at = row['request_to_organisation_created_at']
         request_to_organisation.edited_at = row['request_to_organisation_edited_at']
@@ -67,9 +68,10 @@ class RequestToOrganisationDao(BaseDao):
                     Events._organisation_id == request_to_organisation.events.organisation.id,
                     RequestToOrganisation._status is False
                 )
-            )
+            ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return RequestToOrganisationDeserializer.deserialize(data, DES_FROM_DB_ALL_ACTIVE_REQUESTS), None
 
     def get_by_id(self, request_id: int):
@@ -104,6 +106,7 @@ class RequestToOrganisationDao(BaseDao):
             ).first()
         if not row:
             return None, None
+        row = dict(row)
         return RequestToOrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_REQUEST), None
 
     def remove_by_id(self, request_id: int):
@@ -117,6 +120,7 @@ class RequestToOrganisationDao(BaseDao):
         with self.session as sess:
             row = sess.execute(sql).first()
             sess.commit()
+        row = dict(row)
         return RequestToOrganisation(id=row['id']), None
 
     def get_ids_by_req_id(self, request_to_organisation):
@@ -133,6 +137,7 @@ class RequestToOrganisationDao(BaseDao):
         ).where(
             RequestToOrganisation._id == request_to_organisation.id
         ).first()
+        row = dict(row)
         request_to_organisation.events = Events(id=row['request_to_organisation_events_id'])
         request_to_organisation.children = Children(id=row['request_to_organisation_children_id'])
         request_to_organisation.parents = Parents(

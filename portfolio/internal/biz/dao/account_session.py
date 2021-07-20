@@ -21,6 +21,7 @@ class AccountSessionDao(BaseDao):
         print(row)
         if not row:
             return None, None
+        row = dict(row)
         account_session.id = row['account_session_id']
         return account_session, None
 
@@ -33,7 +34,7 @@ class AccountSessionDao(BaseDao):
             ).first()
         if not row:
             return None, None
-        print(row)
+        row = dict(row)
         return AccountSession(id=row['account_session_account_main_id']), None
 
     def get_by_session_id_with_confirmed(self, session_id: int):
@@ -42,8 +43,9 @@ class AccountSessionDao(BaseDao):
                 AccountSession._account_main_id.label('account_session_account_main_id'),
                 AccountMain._is_confirmed.label('account_main_is_confirmed')
             ).join(AccountSession._account_main).where(AccountSession._id == session_id).first()
-            if not row:
-                return None, None
+        if not row:
+            return None, None
+        row = dict(row)
         return AccountMain(
             id=row['account_session_account_main_id'],
             is_confirmed=row['account_main_is_confirmed']

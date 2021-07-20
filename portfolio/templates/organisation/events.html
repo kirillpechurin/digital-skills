@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+          <h5>Ваши мероприятия</h5>
+        </div>
+          <div class="row col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5 d-flex align-items-center">
+            <button type="button" style="border-radius: 25px;" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              Добавить событие
+            </button>
+          </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+          <img src="{{ url_for('static', filename='photos/organisation/icon_events.png') }}">
+        </div>
+      </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+    </div>
+</div>
+
+{% if list_events %}
+<div class="container-fluid mt-5">
+    <div class="row">
+      {% for event in list_events %}
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-1">
+        <hr>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+          <h5>Название: {{ event.name }}</h5>
+          <h5>Тип события: {{ event.type }}</h5>
+          <h5>Дата: {{ event.date_event }}</h5>
+          <h5>Количество часов: {{ event.hours }}</h5>
+          <h5>Прокачиваемый навык: {{ event.skill }}</h5>
+            <a style="border-radius: 25px;" class="btn btn-info" href="{{ url_for('organisation/private_office.detail_event', events_id=event.id) }}">
+              Подробнее
+            </a>
+          </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+          <img src="{{ url_for('static', filename='photos/organisation/icon_events.png') }}">
+        </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+    </div>
+      <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      {% endfor %}
+</div>
+</div>
+{% else %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex justify-content-center">
+        <h5 class="text-center bg-light" style="border-radius: 50px; width: 600px;">У вас еще нет активных событий, самое время добавить их!</h5>
+      </div>
+    </div>
+</div>
+{% endif%}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Добавление события</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form_for_add_event" method="post" action="{{ url_for('organisation/private_office.add_event') }}">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" name="type" id="type" required placeholder="Тип события">
+            <input type="text" class="mt-2 form-control" name="name" id="name" required placeholder="Название">
+            <input type="date" class="mt-2 form-control" name="date_event" id="date_event" required placeholder="Дата">
+            <input type="number" class="mt-2 form-control" name="hours" id="hours" required placeholder="Количество часов">
+            <input type="text" class="mt-2 form-control" name="skill" id="skill" required placeholder="Прокачиваемый навык">
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+<script type="text/javascript">
+function formatDate(format_date, format_string)
+{
+    var yyyy = format_date.getFullYear();
+    var yy = yyyy.toString().substring(2);
+    var m = format_date.getMonth() + 1;
+    var mm = m < 10 ? '0' + m : m;
+    var d = format_date.getDate();
+    var dd = d < 10 ? '0' + d : d;
+
+    var H = format_date.getHours();
+    var HH = H < 10 ? '0' + H : H;
+    var M = format_date.getMinutes();
+    var MM = M < 10 ? '0' + M : M;
+    var S = format_date.getSeconds();
+    var SS = S < 10 ? '0' + S : S;
+
+    format_string = format_string.replace(/yyyy/i, yyyy);
+    format_string = format_string.replace(/yy/i, yy);
+    format_string = format_string.replace(/mm/i, mm);
+    format_string = format_string.replace(/m/i, m);
+    format_string = format_string.replace(/dd/i, dd);
+    format_string = format_string.replace(/d/i, d);
+    format_string = format_string.replace(/HH/i, HH);
+    format_string = format_string.replace(/H/i, H);
+    format_string = format_string.replace(/MM/i, MM);
+    format_string = format_string.replace(/M/i, M);
+    format_string = format_string.replace(/SS/i, SS);
+    format_string = format_string.replace(/S/i, S);
+
+    return format_string;
+}
+
+Date.prototype.format = function(format)
+{
+    return formatDate(this, format);
+}
+
+document.getElementById("form_for_add_event").onchange = function () {
+    var d = new Date();
+    document.getElementById("date_event").min = d.format('yyyy-mm-dd');
+}
+</script>
+</body>
+</html>

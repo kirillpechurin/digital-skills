@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+          {% if list_request %}
+        <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">Статус заявки</th>
+              <th scope="col">Наименование события</th>
+              <th scope="col">Дата события</th>
+              <th scope="col">Фамилия Имя родителя</th>
+              <th scope="col">Фамилия Имя Ребенка</th>
+              <th scope="col">Подробнее о заявке</th>
+              <th scope="col">Одобрить заявку</th>
+              <th scope="col">Отклонить заявку</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for req in list_request %}
+            <tr>
+              <td>{% if not req.status %}Ожидает одобрения{% else %}Уже одобрена{% endif %}</td>
+              <td>{{ req.events.name }}</td>
+              <td>{{ req.events.date_event }}</td>
+              <td>{{ req.parents.name }} {{ req.parents.surname }}</td>
+              <td>{{ req.children.name }} {{ req.children.surname }}</td>
+              <td>
+                <a class="btn btn-info" href="{{ url_for('organisation/private_office.get_detail_request', request_id=req.id) }}">
+                    Перейти
+                </a>
+              </td>
+              <td>
+                  <form method="post" action="{{ url_for('organisation/private_office.approve_req', request_id=req.id) }}">
+                  <button class="btn btn-info">
+                      Одобрить
+                  </button>
+                  </form>
+              </td>
+                <td>
+                  <form method="post" action="{{ url_for('organisation/private_office.reject_request', request_id=req.id) }}">
+                  <button class="btn btn-info">
+                      Отклонить
+                  </button>
+                  </form>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h5>Нет активных запросов</h5>
+          {% endif %}
+    </div>
+</div>
+</body>
+</html>

@@ -25,6 +25,7 @@ class AchievementsDao(BaseDao):
         with self.session() as sess:
             row = sess.execute(sql).first()
             sess.commit()
+        row = dict(row)
         achievement.id = row['achievements_id']
         achievement.created_at = row['achievements_created_at']
         achievement.edited_at = row['achievements_edited_at']
@@ -51,11 +52,12 @@ class AchievementsDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return AchievementsDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS), None
 
     def get_by_events_id(self, events_id: int):
         with self.session() as sess:
-            data = sess.query(
+            row = sess.query(
                 Achievements._id.label('achievements_id'),
                 Achievements._name.label('achievements_name'),
                 Achievements._points.label('achievements_points'),
@@ -63,7 +65,9 @@ class AchievementsDao(BaseDao):
             ).where(
                 Achievements._events_id == events_id
             ).first()
-        return AchievementsDeserializer.deserialize(data, DES_FROM_DB_DETAIL_ACHIEVEMENTS), None
+
+        row = dict(row)
+        return AchievementsDeserializer.deserialize(row, DES_FROM_DB_DETAIL_ACHIEVEMENTS), None
 
     def update(self, achievement_id: int, achievement: Achievements):
         with self.session() as sess:

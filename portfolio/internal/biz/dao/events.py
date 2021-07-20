@@ -38,6 +38,7 @@ class EventsDao(BaseDao):
             sess.commit()
         if not row:
             return None, None
+        row = dict(row)
         event.id = row['events_id']
         event.created_at = row['events_created_at']
         event.edited_at = row['events_edited_at']
@@ -53,14 +54,15 @@ class EventsDao(BaseDao):
                 Events._hours.label('events_hours'),
                 Events._skill.label('events_skill'),
                 Events._organisation_id.label('events_organisation_id'),
-            ).where(and_(
-                Events._organisation_id == organisation_id,
-                Events._date_event > datetime.datetime.utcnow()
-
-            )
+            ).where(
+                and_(
+                    Events._organisation_id == organisation_id,
+                    Events._date_event > datetime.datetime.utcnow()
+                )
             )
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return EventsDeserializer.deserialize(data, DES_FROM_DB_EVENTS_ORG), None
 
     def get_by_id(self, event_id: int):
@@ -75,6 +77,7 @@ class EventsDao(BaseDao):
             ).where(Events._id == event_id).first()
             if not row:
                 return None, "Данное событие не существует"
+            row = dict(row)
             return EventsDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_EVENT), None
         with self.session() as sess:
             row = sess.query(
@@ -87,11 +90,12 @@ class EventsDao(BaseDao):
             ).where(Events._id == event_id).first()
         if not row:
             return None, "Данное событие не существует"
+        row = dict(row)
         return EventsDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_EVENT), None
 
     def get_by_organisation_id(self, organisation_id: int):
         with self.session() as sess:
-            row = sess.query(
+            data = sess.query(
                 Events._id.label("events_id"),
                 Events._type.label("events_type"),
                 Events._name.label("events_name"),
@@ -99,6 +103,7 @@ class EventsDao(BaseDao):
                 Events._hours.label("events_hours"),
                 Events._skill.label("events_skill"),
             ).where(Events._organisation_id == organisation_id).all()
-        if not row:
+        if not data:
             return None, None
-        return EventsDeserializer.deserialize(row, DES_FROM_DB_EVENTS_ORG), None
+        data = [dict(row) for row in data]
+        return EventsDeserializer.deserialize(data, DES_FROM_DB_EVENTS_ORG), None

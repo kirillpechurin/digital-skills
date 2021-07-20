@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_parent.html' %}
+<div class="container-fluid">
+  <div class="row">
+    {% if organisations %}
+    {% for organisation in organisations %}
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+          <h5>{{ organisation.name }}</h5>
+          <h5>{{ organisation.login }}</h5>
+          {% if organisation.description %}
+          <p class="mt-5">
+            {{ organisation.description }}
+          </p>
+          {% endif %}
+          <a class="mt-5 btn btn-info" href="{{ url_for('main.detail_organisation', organisation_id=organisation.id) }}">
+            Подробнее
+          </a>
+      </div>
+      <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex flex-row-reverse">
+        {% if organisation.photo_link %}
+          <img src="{{ organisation.photo_link }}" alt="">
+        {% else %}
+        <img class="w-50" src="{{ url_for('static', filename='photos/organisation/icon_org.png') }}" alt="">
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+
+    </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+
+    </div>
+    <hr>
+    {% endfor %}
+    {% else %}
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+
+    </div>
+    <div class="mt-5 col-6 col-sm-6 col-md-6 col-xl-6 col-lg-6">
+      <h5 class="bg-light" style="border-radius: 10px; width: 350px;">Нет зарегистрированных компаний</h5>
+    </div>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

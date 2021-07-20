@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_parent.html' %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+    <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5">
+      <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+          <h5>{{ organisation.name }}</h5>
+          <h5>{{ organisation.login }}</h5>
+          {% if organisation.description %}
+          <p class="mt-5">
+            {{ organisation.description }}
+          </p>
+          {% endif %}
+        </div>
+        <div class="row col-8 col-sm-8 col-md-8 col-xl-8 col-lg-8 mt-5 d-flex flex-row-reverse">
+        {% if organisation.photo_link %}
+          <img src="{{ organisation.photo_link }}" alt="">
+        {% else %}
+        <img class="w-50" src="{{ url_for('static', filename='photos/organisation/icon_org.png') }}" alt="">
+        {% endif %}
+      </div>
+
+      </div>
+    <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+    </div>
+  </div>
+</div>
+{% if list_teacher %}
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-5 ">
+          <div class="header d-flex justify-content-center">
+            Учителя организации
+          </div>
+          <div class="mt-3 header d-flex justify-content-center">
+            <h5>В организации учителей:
+              <span class="bg-info p-2" style="border-radius: 15px;">{{ count_teacher }}</span>
+            </h5>
+          </div>
+          <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">Фамилия Имя преподавателя</th>
+              <th scope="col">Специализация</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for teacher in list_teacher %}
+            <tr>
+              <td>{{ teacher.name }} {{ teacher.surname }}</td>
+              <td>{{ teacher.specialty }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-5 ">
+          <div class="header d-flex justify-content-center">
+            В организации пока нет учителей
+          </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if list_active_events %}
+<div class="container-fluid mb-5">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-5 ">
+          <div class="mt-3 header d-flex justify-content-center">
+            Мероприятия организации
+          </div>
+          <div class="header d-flex justify-content-center">
+            <h5>В организации мероприятий:
+              <span class="bg-info p-2" style="border-radius: 15px;">{{ count_events }}</span>
+            </h5>
+          </div>
+          <table class="table">
+            <thead>
+            <tr>
+              <th scope="col">Тип события</th>
+              <th scope="col">Название</th>
+              <th scope="col">Дата события</th>
+              <th scope="col">Количество часов</th>
+              <th scope="col">Приобретаемый навык</th>
+              <th scope="col">Подробнее</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in list_active_events %}
+            <tr>
+              <td>{{ event.type }} </td>
+              <td>{{ event.name }}</td>
+              <td>{{ event.date_event }}</td>
+              <td>{{ event.hours }}</td>
+              <td>{{ event.skill }}</td>
+              <td>
+                <a class="btn btn-info" href="{{ url_for('main.detail_event', organisation_id=organisation.id, events_id=event.id) }}">
+                  Подробнее
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="container-fluid">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mt-5 ">
+          <div class="header d-flex justify-content-center">
+            В организации пока нет активных событий
+          </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+</body>
+</html>

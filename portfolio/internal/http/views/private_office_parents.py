@@ -37,15 +37,16 @@ def index(auth_account_main_id: int, parent_id: int):
         if err:
             return json.dumps(err)
         context = []
-        for child in list_children:
-            events_child = EventsChild(children_organisation=ChildrenOrganisation(children=Children(id=child.id)))
-            list_events, err = EventsChildService.get_completed_events_by_child_id(events_child)
-            if err:
-                return json.dumps(err)
-            context.append({
-                "children_info": child,
-                "events_info": list_events
-            })
+        if list_children:
+            for child in list_children:
+                events_child = EventsChild(children_organisation=ChildrenOrganisation(children=Children(id=child.id)))
+                list_events, err = EventsChildService.get_completed_events_by_child_id(events_child)
+                if err:
+                    return json.dumps(err)
+                context.append({
+                    "children_info": child,
+                    "events_info": list_events
+                })
 
         response = make_response(render_template(
             'parents/index.html',
@@ -60,11 +61,8 @@ def progress(children_id: int, auth_account_main_id: int, parent_id: int):
     if request.method == 'GET':
         if children_id == 'A':
             children = Children(
-                id=parent_id,
                 parents=Parents(
-                    account_main=AccountMain(
-                        id=auth_account_main_id
-                    )
+                    id=parent_id,
                 )
             )
             list_children, err = ChildrenService.get_children_by_parents_id(children)
@@ -167,9 +165,9 @@ def edit_children(auth_account_main_id: int, children_id: int, parent_id: int):
         return resp
 
 
-@private_office_parents.route('/delete_children/<int:children_id>', methods=['POST'])
+@private_office_parents.route('/add_child', methods=['POST'])
 @get_parent_id_and_acc_id_with_confirmed_email
-def delete_child(auth_account_main_id: int, children_id: int, parent_id: int):
+def add_child(auth_account_main_id: int, parent_id: int):
     if request.method == 'POST':
         errors = AddChildrenSchema().validate(dict(name=request.form['name'],
                                                    surname=request.form['surname'],

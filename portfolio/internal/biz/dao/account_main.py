@@ -39,6 +39,7 @@ class AccountMainDao(BaseDao):
             sess.commit()
         if not row:
             return None, None
+        row = dict(row)
         account_main.id = row[ACCOUNT_MAIN_ID]
         account_main.created_at = row[ACCOUNT_MAIN_CREATED_AT]
         account_main.edited_at = row[ACCOUNT_MAIN_EDITED_AT]
@@ -59,7 +60,8 @@ class AccountMainDao(BaseDao):
             ).where(AccountMain._id == account_main_id).first()
         if not row:
             return None, None
-        return AccountMainDeserializer.deserialize(dict(row), DES_FROM_DB_ACCOUNT_MAIN_DETAIL), None
+        row = dict(row)
+        return AccountMainDeserializer.deserialize(row, DES_FROM_DB_ACCOUNT_MAIN_DETAIL), None
 
     def get_by_email_and_hash_password(self, account_main: AccountMain):
         with self.session() as sess:
@@ -73,10 +75,10 @@ class AccountMainDao(BaseDao):
                 AccountMain._is_confirmed.label(ACCOUNT_MAIN_IS_CONFIRMED),
                 AccountMain._account_role_id.label(ACCOUNT_MAIN_ACCOUNT_ROLE_ID)
             ).where(and_(AccountMain._hash_password == account_main.hash_password, AccountMain._email == account_main.email)).first()
-            print(dict(row))
         if not row:
             return None, None
-        return AccountMainDeserializer.deserialize(dict(row), DES_FROM_DB_ACCOUNT_MAIN_DETAIL), None
+        row = dict(row)
+        return AccountMainDeserializer.deserialize(row, DES_FROM_DB_ACCOUNT_MAIN_DETAIL), None
 
     def update_password(self, account_main_id: int, account_main: AccountMain):
         with self.session() as sess:

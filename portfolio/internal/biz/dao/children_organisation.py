@@ -21,6 +21,7 @@ class ChildrenOrganisationDao(BaseDao):
             ).where(ChildrenOrganisation._children_id == children_id).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return [
             Organisation(
                 id=org.get('organisation_id'),
@@ -43,7 +44,7 @@ class ChildrenOrganisationDao(BaseDao):
         )
 
         row = sess.execute(sql).first()
-
+        row = dict(row)
         children_organisation.id = row['children_organisation_id']
         children_organisation.created_at = row['children_organisation_created_at']
         children_organisation.edited_at = row['children_organisation_edited_at']
@@ -61,6 +62,7 @@ class ChildrenOrganisationDao(BaseDao):
         ).first()
         if not row:
             return None, 'get_by_org_and_child_id'
+        row = dict(row)
         children_organisation.id = row['children_organisation_id']
         return children_organisation, None
 
@@ -79,6 +81,7 @@ class ChildrenOrganisationDao(BaseDao):
             ).all()
         if not data:
             return None, None
+        data = [dict(row) for row in data]
         return ChildrenOrganisationDeserializer.deserialize(data, DES_FROM_DB_LIST_LEARNERS), None
 
     def get_children_by_children_org_id(self, children_organisation_id: int):
@@ -94,4 +97,5 @@ class ChildrenOrganisationDao(BaseDao):
             ).where(
                 ChildrenOrganisation._id == children_organisation_id
             ).first()
+        row = dict(row)
         return ChildrenOrganisationDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_LEARNER), None

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Кодировка веб-страницы -->
+    <meta charset="utf-8">
+    <!-- Настройка viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>...</title>
+
+    <!-- Bootstrap CSS (jsDelivr CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</head>
+<body>
+{% include 'navbar_organisation.html' %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container-fluid">
+    <div class="row mt-5">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 d-flex align-items-center">
+            У вас зарегистрировано
+          <span style="border-radius: 10px; margin-right: 10px; margin-left: 10px;" class="bg-info p-2">
+            {{ count_learners }}
+          </span> обучающихся
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4">
+          <img class="w-75" src="{{ url_for('static', filename='photos/organisation/icon_pupils.png') }}">
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+<!--        end-->
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2 mt-5">
+            <a class="btn btn-info" href="{{ url_for('organisation/private_office.get_requests') }}">
+                Добавить ученика
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row mt-5">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+      <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5" style="border: 2px solid; border-radius: 20px;">
+        <h5 class="text-center mt-3 mb-3">Поиск обучающегося</h5>
+        <form class="form" method="post" action="http://localhost:8000/private_office_organisation/add_employee">
+          <div class="mb-3">
+            <input type="text" class="mt-2 form-control" name="search_name" id="search_name" required placeholder="Имя">
+            <input type="text" class="mt-2 form-control" name="search_surname" id="search_surname" placeholder="Фамилия">
+            <input type="date" class="mt-2 form-control" name="search_date_born" id="search_date_born" placeholder="Дата рождения">
+          </div>
+          <hr>
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-primary mb-2" style="border-radius: 15px; padding-right: 20px; padding-left: 20px;">Найти</button>
+        </div>
+      </form>
+      </div>
+        <div class="col-1 col-sm-1 col-md-1 col-xl-1 col-lg-1">
+        </div>
+        <div class="row col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2 mt-5" style="border: 2px solid; border-radius: 20px;">
+          <h5 class="mt-3">Иван Иванов</h5>
+          <h5 class="mt-3">Дата рождения: 20.04.2002</h5>
+        <form class="mt-3 mb-3" action="http://localhost:8000/main/organisation/_id">
+          <button type="submit" class="btn btn-info">Подробнее</button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mb-5">
+    <div class="row mt-5">
+        <div class="col-2 col-sm-2 col-md-2 col-xl-2 col-lg-2">
+        </div>
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+        <h5>Список обучающихся: </h5>
+            {% if list_learners %}
+            {% for learner in list_learners %}
+            <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ learner.id }}">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ learner.id }}"
+                    aria-expanded="true" aria-controls="collapseOne">
+                {{ loop.index }}. {{ learner.children.name }} {{ learner.children.surname }}, {{ learner.children.date_born }}
+            </button>
+          </h2>
+          <div id="collapse{{ learner.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ learner.id }}"
+               data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <form class="d-flex flex-row-reverse" action="{{ url_for('organisation/private_office.get_detail_children', children_org_id=learner.id) }}">
+                <button type="submit" class="btn btn-info">Подробнее</button>
+              </form>
+            </div>
+          </div>
+        </div>
+                {% endfor %}
+  </div>
+</div>
+{% else %}
+        <div class="col-4 col-sm-4 col-md-4 col-xl-4 col-lg-4 mt-5">
+            <h5 class="bg-light" style="width: 400px;">У вас не зарегистрировано обучающихся. Самое время проверить запросы!</h5>
+        </div>
+{% endif %}
+    </div>
+</div>
+
+
+<!--<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-dialog-centered" id="staticBackdrop">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="staticBackdropLabel">Добавление обучающегося</h5>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--      </div>-->
+<!--      <div class="modal-body">-->
+<!--        <form method="post" action="{{ url_for('organisation/private_office.add_learner') }}">-->
+<!--          <div class="mb-3">-->
+<!--            <input type="text" class="mt-2 form-control" name="surname" id="surname" required placeholder="Фамилия">-->
+<!--            <input type="text" class="mt-2 form-control" name="name" id="name" required placeholder="Имя">-->
+<!--            <input type="date" class="mt-2 form-control" name="date_born" id="date_born" required placeholder="Дата рождения">-->
+<!--          </div>-->
+<!--        <div class="modal-footer">-->
+<!--          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>-->
+<!--          <button type="submit" class="btn btn-primary">Добавить</button>-->
+<!--        </div>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--</div>-->
+
+</body>
+</html>

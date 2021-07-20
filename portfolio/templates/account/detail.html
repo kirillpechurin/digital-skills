@@ -14,9 +14,9 @@
 </head>
 <body>
 {% if account_main.account_role.id == 1 %}
-    {% include 'navbars/navbar_organisation.html' %}
+    {% include 'navbar_organisation.html' %}
 {% elif account_main.account_role.id == 2 %}
-    {% include 'navbars/navbar_parent.html' %}
+    {% include 'navbar_parent.html' %}
 {% endif %}
 {% with messages = get_flashed_messages() %}
   {% if messages %}
