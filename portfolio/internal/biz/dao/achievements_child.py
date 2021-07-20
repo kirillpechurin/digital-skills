@@ -1,4 +1,4 @@
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements_child import AchievementsChildDeserializer, \
@@ -62,3 +62,12 @@ class AchievementsChildDao(BaseDao):
             achievements_child_db._point = achievements_child.point
             sess.commit()
         return achievements_child, None
+
+    def remove_by_id(self, achievements_child_id: int):
+        sql = delete(
+            AchievementsChild
+        ).where(AchievementsChild._id == achievements_child_id)
+        with self.session() as sess:
+            sess.execute(sql)
+            sess.commit()
+        return achievements_child_id, None

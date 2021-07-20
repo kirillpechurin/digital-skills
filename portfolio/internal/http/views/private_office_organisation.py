@@ -368,3 +368,22 @@ def update_achievement_child(children_org_id: int, auth_account_main_id: int, or
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
         return resp
+
+
+@private_office_organisation.route('/learners/<int:children_org_id>/<int:achievement_child_id>/delete_achievement_for_child', methods=['POST'])
+@get_org_id_and_acc_id_with_confirmed_email
+def delete_achievement_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, achievement_child_id:int):
+    if request.method == 'POST':
+        achievement_child = AchievementsChild(
+            id=achievement_child_id,
+            achievements=Achievements(id=request.form.get('achievement_id')),
+            point=request.form.get('point')
+        )
+        achievement_child, err = AchievementsChildService.delete_by_id(achievement_child)
+        if err:
+            return None, err
+
+        resp = make_response(
+            redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
+        )
+        return resp

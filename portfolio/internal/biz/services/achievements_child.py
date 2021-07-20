@@ -17,3 +17,10 @@ class AchievementsChildService:
         if err:
             return None, err
         return achievements_child, None
+
+    @staticmethod
+    def delete_by_id(achievements_child: AchievementsChild):
+        achievements_child, err = AchievementsChildDao().remove_by_id(achievements_child.id)
+        if err:
+            return None, err
+        return achievements_child, None
