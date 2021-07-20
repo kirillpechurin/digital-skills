@@ -36,6 +36,35 @@ class EventsChildDao(BaseDao):
             return None, None
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
 
+    def get_completed_events_by_child_id_with_date(self, children_id: int, gap_for_skill):
+        with self.session() as sess:
+            data = sess.query(
+                EventsChild._id.label('events_child_id'),
+                EventsChild._status.label('events_child_status'),
+                EventsChild._hours_event.label('events_child_hours_event'),
+                Events._id.label('events_id'),
+                Events._type.label('events_type'),
+                Events._name.label('events_name'),
+                Events._date_event.label('events_date_event'),
+                Events._skill.label('events_skill'),
+                Organisation._name.label('organisation_name')
+            ).join(
+                EventsChild._events
+            ).join(
+                EventsChild._children_organisation
+            ).join(
+                ChildrenOrganisation._organisation
+            ).where(
+                and_(
+                    EventsChild._status is True,
+                    ChildrenOrganisation._children_id == children_id,
+                    Events._date_event > gap_for_skill
+                )
+            ).all()
+        if not data:
+            return None, None
+        return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_EVENTS), None
+
     def get_active_events_by_child_id(self, children_id):
         with self.session() as sess:
             data = sess.query(

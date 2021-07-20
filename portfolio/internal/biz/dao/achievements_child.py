@@ -2,11 +2,12 @@ from sqlalchemy import insert, delete
 
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements_child import AchievementsChildDeserializer, \
-    DES_FROM_DB_ALL_ACHIEVEMENTS
+    DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID
 from portfolio.models.achievements import Achievements
 from portfolio.models.achievements_child import AchievementsChild
 from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.events import Events
+from portfolio.models.organisation import Organisation
 
 
 class AchievementsChildDao(BaseDao):
@@ -34,6 +35,34 @@ class AchievementsChildDao(BaseDao):
         if not data:
             return None, None
         return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS), None
+
+    def get_by_children_id(self, children_id: int):
+        with self.session() as sess:
+            data = sess.query(
+                AchievementsChild._id.label('achievements_child_id'),
+                AchievementsChild._point.label('achievements_child_point'),
+                Achievements._id.label('achievements_id'),
+                Achievements._name.label('achievements_name'),
+                Achievements._nomination.label('achievements_nomination'),
+                Events._id.label('events_id'),
+                Events._name.label('events_name'),
+                Events._date_event.label('events_date_event'),
+                Organisation._id.label('organisation_id'),
+                Organisation._name.label('organisation_name'),
+            ).join(
+                AchievementsChild._achievements
+            ).join(
+                AchievementsChild._children_organisation
+            ).join(
+                Achievements._events
+            ).join(
+                ChildrenOrganisation._organisation
+            ).where(
+                ChildrenOrganisation._id == children_id
+            ).all()
+        if not data:
+            return None, None
+        return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID), None
 
     def add_achievement(self, achievements_child: AchievementsChild):
         sql = insert(

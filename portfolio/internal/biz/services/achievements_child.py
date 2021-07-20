@@ -24,3 +24,10 @@ class AchievementsChildService:
         if err:
             return None, err
         return achievements_child, None
+
+    @staticmethod
+    def get_all_achievements_by_child_id(achievements_child: AchievementsChild):
+        achievements_child, err = AchievementsChildDao().get_by_children_id(achievements_child.children_organisation.children.id)
+        if err:
+            return None, err
+        return achievements_child, None
