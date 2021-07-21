@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from flask import Blueprint, request, make_response, render_template, url_for, session, flash
+from flask import Blueprint, request, make_response, render_template, url_for, session, flash, jsonify
 from werkzeug.utils import redirect
 
 from portfolio.enums.error.errors_enum import ErrorEnum
@@ -13,6 +13,9 @@ from portfolio.internal.biz.validators.confirm_code import ConfirmCodeSchema
 from portfolio.internal.biz.validators.login import LoginAuthSchema
 from portfolio.internal.biz.validators.password import EditPasswordSchema
 from portfolio.internal.biz.validators.register import RegisterOrganisationSchema, RegisterParentSchema
+from portfolio.internal.http.rest_api.answers.account_main import get_response_register, \
+    get_response_detail_info_account
+from portfolio.internal.http.rest_api.answers.account_role import get_response_get_register
 from portfolio.internal.http.wrappers.account_role import check_account_role
 from portfolio.internal.http.wrappers.auth import required_auth, required_auth_with_confirmed_email
 from portfolio.models.account_main import AccountMain
@@ -55,10 +58,7 @@ def register(account_role_id: int = None,
         else:
             errors = ErrorEnum.not_implemented
         if errors:
-            flash(str(errors))
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            return jsonify(errors)
 
         account_main = AccountMainDeserializer.deserialize(request.form, DES_FROM_REGISTER)
         account_main.account_role = AccountRole(id=account_role_id)
@@ -68,40 +68,26 @@ def register(account_role_id: int = None,
             parent.account_main = account_main
         account_main, errors = AuthService.register(account_main, organisation, parent)
         if errors:
-            flash(errors)
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            return jsonify(errors)
+
         if account_main.is_confirmed:
             return redirect(url_for('account.login'))
-        return render_template('account/registration.html',
-                               context={"is_email_sent": account_main.is_email_sent})
+        return get_response_register(account_main)
 
     elif request.method == 'GET':
-        return make_response(
-            render_template(
-                'account/registration.html',
-                context={"roles": list_account_role}
-            )
-        )
+        return get_response_get_register(list_account_role)
 
 
 @account.route('/auth/code', methods=['POST'])
 def confirm_code():
     validate_errors = ConfirmCodeSchema().validate(dict(code=request.form.get('code')))
     if validate_errors:
-        flash(str(validate_errors))
-        return make_response(
-            redirect(request.headers.get("Referer"))
-        )
+        return jsonify(validate_errors)
 
     auth_code = AuthCode(code=request.form.get('code'))
     _, err = AuthService.confirm_code(auth_code)
     if err:
-        flash(err)
-        return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+        return jsonify(err)
 
     return redirect(url_for('account.login'))
 
@@ -111,17 +97,8 @@ def confirm_code():
 def get_detail_info(auth_account_main_id: int):
     account_main, err = AccountMainService.get_detail_account_info(auth_account_main_id)
     if err:
-        flash(err)
-        return make_response(
-                redirect(request.headers.get("Referer"))
-            )
-
-    response = make_response(render_template(
-        'account/detail.html',
-        account_main=account_main
-    ))
-    response.status_code = 200
-    return response
+        return jsonify(err)
+    return get_response_detail_info_account(account_main)
 
 
 @account.route('/login', methods=['GET', 'POST'])
@@ -130,22 +107,18 @@ def login():
         errors = LoginAuthSchema().validate(dict(email=request.form['email'],
                                                  password=request.form['password']))
         if errors:
-            flash(str(errors))
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            jsonify(errors)
 
         account_main = AccountMainDeserializer.deserialize(request.form, DES_FROM_LOGIN)
         account_main, err = AuthService.auth_login(account_main)
         if err:
-            flash(err)
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            jsonify(err)
+
         session['auth-token'] = account_main.auth_token
         return redirect(url_for('account.get_detail_info'))
+
     elif request.method == "GET":
-        return render_template('account/login.html', errors=None)
+        raise NotImplemented
 
 
 @account.route('/edit_password', methods=['GET', 'POST'])
@@ -158,28 +131,13 @@ def edit_password(auth_account_main_id: int):
             repeat_new_password=request.form['repeat_new_password']
         ))
         if errors:
-            flash(str(errors))
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            return jsonify(errors)
 
         if request.form['new_password'] != request.form['repeat_new_password']:
-            flash(ErrorEnum.password_is_not_equal)
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            return jsonify(ErrorEnum.password_is_not_equal)
         account_main = AccountMain(id=auth_account_main_id, password=request.form['new_password'])
         account_main, err = AuthService.update_password(request.form['old_password'], account_main)
         if err:
-            flash(err)
-            return make_response(
-                redirect(request.headers.get("Referer"))
-            )
+            return jsonify(err)
 
-        flash(SuccessEnum.update)
-        resp = make_response(
-            redirect(
-                url_for('account.get_detail_info')
-            )
-        )
-        return resp
+        return redirect(url_for('account.get_detail_info'))
