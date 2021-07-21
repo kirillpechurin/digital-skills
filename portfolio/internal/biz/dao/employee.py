@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import insert, delete
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FROM_DB_ALL_EMPLOYEE, \
     DES_FROM_DB_DETAIL_EMPLOYEE
@@ -24,7 +25,6 @@ class EmployeeDao(BaseDao):
         if not data:
             return None, None
         data = [dict(row) for row in data]
-        print(data)
         return EmployeeDeserializer.deserialize(data, DES_FROM_DB_ALL_EMPLOYEE), None
 
     def add(self, employee: Employee):
@@ -83,7 +83,6 @@ class EmployeeDao(BaseDao):
                 Employee._id == employee_id
             ).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.employee_not_found
         row = dict(row)
-        print(row)
         return EmployeeDeserializer.deserialize(row, DES_FROM_DB_DETAIL_EMPLOYEE), None

@@ -1,6 +1,7 @@
 import sqlalchemy
 from sqlalchemy import insert, and_
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
     DES_FROM_DB_LIST_LEARNERS, DES_FROM_DB_GET_DETAIL_LEARNER
@@ -58,9 +59,15 @@ class ChildrenOrganisationDao(BaseDao):
             ChildrenOrganisation._created_at.label('children_organisation_created_at'),
             ChildrenOrganisation._edited_at.label('children_organisation_edited_at')
         )
-        row = sess.execute(sql).first()
-        sess.commit()
-        row = dict(row)
+        try:
+            row = sess.execute(sql).first()
+            sess.commit()
+            row = dict(row)
+        except sqlalchemy.exc.IntegrityError as exception:
+            if str(exception.orig)[48:48 + len("unique_children_organisation")] == 'unique_children_organisation':
+                return None, "ALREADY_EXISTS"
+            else:
+                raise exception
         children_organisation.id = row['children_organisation_id']
         children_organisation.created_at = row['children_organisation_created_at']
         children_organisation.edited_at = row['children_organisation_edited_at']
@@ -84,11 +91,10 @@ class ChildrenOrganisationDao(BaseDao):
             sess.commit()
         except sqlalchemy.exc.IntegrityError as exception:
             if str(exception.orig)[48:48 + len("unique_children_organisation")] == 'unique_children_organisation':
-                return None, "ALREADY_EXISTS"
+                return None, ErrorEnum.children_organisation_already_exists
             else:
                 raise exception
         row = dict(row)
-        print('row: ', row)
         children_organisation.id = row['children_organisation_id']
         children_organisation.created_at = row['children_organisation_created_at']
         children_organisation.edited_at = row['children_organisation_edited_at']
@@ -105,9 +111,8 @@ class ChildrenOrganisationDao(BaseDao):
             )
         ).first()
         if not row:
-            return None, 'get_by_org_and_child_id'
+            return None, ErrorEnum.children_organisation_not_found
         row = dict(row)
-        print('row_get_by_org: ', row)
         children_organisation.id = row['children_organisation_id']
         return children_organisation, None
 
@@ -143,4 +148,6 @@ class ChildrenOrganisationDao(BaseDao):
                 ChildrenOrganisation._id == children_organisation_id
             ).first()
         row = dict(row)
+        if not row:
+            return None, None
         return ChildrenOrganisationDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_LEARNER), None

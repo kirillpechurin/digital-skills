@@ -3,6 +3,7 @@ from datetime import datetime as dt
 
 from sqlalchemy import and_, insert
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_GET_DETAIL_EVENT, DES_FROM_DB_EVENTS_ORG
 from portfolio.models.events import Events
@@ -21,7 +22,6 @@ class EventsDao(BaseDao):
             setattr(events_db, '_created_at', created_at)
             sess.commit()
         return events_db, None
-
 
     def add(self, event: Events):
         sql = insert(
@@ -81,7 +81,7 @@ class EventsDao(BaseDao):
                 Events._skill.label("events_skill"),
             ).where(Events._id == event_id).first()
             if not row:
-                return None, "Данное событие не существует"
+                return None, ErrorEnum.event_not_found
             row = dict(row)
             return EventsDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_EVENT), None
         with self.session() as sess:
@@ -94,7 +94,7 @@ class EventsDao(BaseDao):
                 Events._skill.label("events_skill"),
             ).where(Events._id == event_id).first()
         if not row:
-            return None, "Данное событие не существует"
+            return None, ErrorEnum.event_not_found
         row = dict(row)
         return EventsDeserializer.deserialize(row, DES_FROM_DB_GET_DETAIL_EVENT), None
 

@@ -1,5 +1,6 @@
 from sqlalchemy import insert, select, update, delete
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.models.account_main import AccountMain
 from portfolio.models.auth_code import AuthCode
@@ -21,8 +22,6 @@ class AuthCodeDao(BaseDao):
         with self.session() as sess:
             row = sess.execute(sql).first()
             sess.commit()
-        if not row:
-            return None, None
         row = dict(row)
         auth_code.id = row['auth_code_id']
         auth_code.created_at = row['auth_code_created_at']
@@ -37,7 +36,7 @@ class AuthCodeDao(BaseDao):
                 AuthCode._account_main_id.label('auth_code_account_main_id')
             ).where(AuthCode._code == auth_code.code).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.auth_code_not_found
         row = dict(row)
         auth_code.id = row['auth_code_id']
         auth_code.edited_at = row['auth_code_edited_at']
@@ -47,6 +46,8 @@ class AuthCodeDao(BaseDao):
     def set_is_confirm(self, account_main_id: int, is_confirmed: bool):
         with self.session() as sess:
             account_main = sess.query(AccountMain).where(AccountMain._id == account_main_id).first()
+            if not account_main:
+                return None, ErrorEnum.account_not_found
             account_main._is_confirmed = is_confirmed
             sess.commit()
         return None, None

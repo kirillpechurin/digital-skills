@@ -15,7 +15,7 @@ class ChildrenOrganisation(AbstractModel):
     _children_id = Column(ForeignKey("children.id", onupdate="CASCADE", ondelete='CASCADE'), type_=Integer, name='children_id', nullable=False)
     _organisation = relationship("Organisation")
     _children = relationship("Children")
-    UniqueConstraint("children_id", "organisation_id", name="unique_children")
+    UniqueConstraint("children_id", "organisation_id", name="unique_children_organisation")
 
     def __init__(self,
                  id: Optional[int] = None,

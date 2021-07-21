@@ -1,3 +1,4 @@
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.account_role import AccountRoleDeserializer, SER_FOR_GET_LIST_ACCOUNT_ROLE
 from portfolio.models.account_role import AccountRole
@@ -13,7 +14,7 @@ class AccountRoleDao(BaseDao):
             ).where(AccountRole._id == account_role_id).first()
         print(row)
         if not row:
-            return None, None
+            return None, ErrorEnum.account_role_not_found
         row = dict(row)
         return AccountRole(id=row['account_role_id'],
                            name=row['account_role_name']), None

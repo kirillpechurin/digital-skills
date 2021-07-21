@@ -4,6 +4,7 @@ import psycopg2
 import sqlalchemy
 from sqlalchemy import insert
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILDREN, \
     DES_FROM_DB_INFO_CHILD
@@ -32,9 +33,9 @@ class ChildrenDao(BaseDao):
                 sess.commit()
             except sqlalchemy.exc.IntegrityError as exception:
                 if str(exception.orig)[48:48+len("unique_children")] == 'unique_children':
-                    return None, "Ребенок уже добавлен"
+                    return None, ErrorEnum.children_already_exists
                 else:
-                    raise exception
+                    raise TypeError
         row = dict(row)
         children.id = row['children_id']
         children.created_at = row['children_created_at']
@@ -66,7 +67,7 @@ class ChildrenDao(BaseDao):
                 Children._date_born.label('children_date_born')
             ).where(Children._id == children_id).first()
         if not row:
-            return None, "Сначала добавьте ребенка"
+            return None, ErrorEnum.children_not_found
         row = dict(row)
         return ChildrenDeserialize.deserialize(row, DES_FROM_DB_INFO_CHILD), None
 

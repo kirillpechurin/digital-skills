@@ -1,5 +1,7 @@
+import sqlalchemy.exc
 from sqlalchemy import insert
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.organisation import OrganisationDeserializer, DES_FROM_DB_ALL_ORGANISATIONS, \
     DES_FROM_DB_DETAIL_ORGANISATION
@@ -24,12 +26,14 @@ class OrganisationDao(BaseDao):
             Organisation._edited_at.label('organisation_edited_at')
         )
         with self.session() as sess:
-            row = sess.execute(sql).first()
-            sess.commit()
-        print(row)
-        if not row:
-            return None, None
-        row = dict(row)
+            try:
+                row = sess.execute(sql).first()
+                sess.commit()
+                row = dict(row)
+            except sqlalchemy.exc.IntegrityError as exception:
+                if str(exception.orig)[48:48 + len("unique_organisation")] == 'unique_organisation':
+                    return None, ErrorEnum.organisation_already_exists
+
         organisation.id = row['organisation_id']
         organisation.created_at = row['organisation_created_at']
         organisation.edited_at = row['organisation_edited_at']
@@ -59,7 +63,7 @@ class OrganisationDao(BaseDao):
                 Organisation._description.label('organisation_description'),
             ).where(Organisation._id == organisation_id).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.organisation_not_found
         row = dict(row)
         return OrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_ORGANISATION), None
 
@@ -77,7 +81,7 @@ class OrganisationDao(BaseDao):
                 Organisation._account_main_id == account_main_id
             ).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.organisation_not_found
         row = dict(row)
         organisation = Organisation(
             id=row['organisation_id'],

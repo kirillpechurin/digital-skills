@@ -1,5 +1,7 @@
+import sqlalchemy
 from sqlalchemy import insert, and_, delete
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.account_main import AccountMainDao
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.dao.children import ChildrenDao
@@ -33,11 +35,15 @@ class RequestToOrganisationDao(BaseDao):
             RequestToOrganisation._edited_at.label('request_to_organisation_edited_at')
         )
         with self.session() as sess:
-            row = sess.execute(sql).first()
-            sess.commit()
-        if not row:
-            return None, "Не успешно"
-        row = dict(row)
+            try:
+                row = sess.execute(sql).first()
+                sess.commit()
+                row = dict(row)
+            except sqlalchemy.exc.IntegrityError as exception:
+                if str(exception.orig)[48:48 + len("unique_request")] == 'unique_request':
+                    return None, ErrorEnum.request_to_organisation_already_exists
+                else:
+                    raise TypeError
         request_to_organisation.id = row['request_to_organisation_id']
         request_to_organisation.created_at = row['request_to_organisation_created_at']
         request_to_organisation.edited_at = row['request_to_organisation_edited_at']
@@ -70,7 +76,6 @@ class RequestToOrganisationDao(BaseDao):
                     RequestToOrganisation._status == False
                 )
             ).all()
-        print(data)
         if not data:
             return None, None
         data = [dict(row) for row in data]
@@ -107,7 +112,7 @@ class RequestToOrganisationDao(BaseDao):
                 )
             ).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.request_to_organisation_not_found
         row = dict(row)
         return RequestToOrganisationDeserializer.deserialize(row, DES_FROM_DB_DETAIL_REQUEST), None
 
@@ -158,19 +163,18 @@ class RequestToOrganisationDao(BaseDao):
     def update_status(self, request_to_organisation: RequestToOrganisation):
         sess = self.sess_transaction
         request_to_organisation_db = sess.query(RequestToOrganisation).where(RequestToOrganisation._id == request_to_organisation.id).first()
+        if not request_to_organisation_db:
+            return None, ErrorEnum.request_to_organisation_not_found
         request_to_organisation_db._status = request_to_organisation.status
         sess.commit()
         return request_to_organisation, None
 
     def accept_request(self, request_to_organisation: RequestToOrganisation):
         try:
-            print('request_to_organisation')
             self.sess_transaction = self.session()
-            print('request_to_organisation')
             request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).get_ids_by_req_id(request_to_organisation)
             if err:
                 return None, err
-            print('request_to_organisation')
             children_organisation = ChildrenOrganisation(children=request_to_organisation.children,
                                                          organisation=request_to_organisation.events.organisation)
 
@@ -187,7 +191,6 @@ class RequestToOrganisationDao(BaseDao):
                     id=children_organisation.id,
                 )
             )
-            print('events get_by_id')
             events, err = EventsDao(sess_transaction=self.sess_transaction).get_by_id(request_to_organisation.events.id)
             if err:
                 return None, err
@@ -196,18 +199,16 @@ class RequestToOrganisationDao(BaseDao):
             events_child, err = EventsChildDao(sess_transaction=self.sess_transaction).add_by_request(events_child)
             if err:
                 return None, err
-            print('events_child add_by_request')
             request_to_organisation.status = True
             request_to_organisation, err = RequestToOrganisationDao(sess_transaction=self.sess_transaction).update_status(request_to_organisation)
             if err:
                 return None, err
-            print('request_to_organisation update_status')
 
             self.sess_transaction.commit()
-            self.sess_transaction.close()
             return request_to_organisation, None
         except Exception as exc:
             print(exc)
-            return None, "Неудачно"
-        finally:
             self.sess_transaction.rollback()
+            return None, ErrorEnum.request_to_organisation_failed
+        finally:
+            self.sess_transaction.close()

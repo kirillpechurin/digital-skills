@@ -1,7 +1,9 @@
 from datetime import date
 
+import sqlalchemy
 from sqlalchemy import and_, insert
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_EVENTS_ORG
 from portfolio.internal.biz.deserializers.events_child import DES_FROM_DB_GET_EVENTS, EventsChildDeserializer, \
@@ -118,9 +120,15 @@ class EventsChildDao(BaseDao):
         )
 
         sess = self.sess_transaction
-        row = sess.execute(sql).first()
-        sess.commit()
-        row = dict(row)
+        try:
+            row = sess.execute(sql).first()
+            sess.commit()
+            row = dict(row)
+        except sqlalchemy.exc.IntegrityError as exception:
+            if str(exception.orig)[48:48 + len("unique_children_organisation")] == 'unique_children_organisation':
+                return None, ErrorEnum.events_child_already_exists
+            else:
+                raise TypeError
         events_child.id = row['events_child_id']
         events_child.created_at = row['events_child_created_at']
         events_child.edited_at = row['events_child_edited_at']
@@ -205,6 +213,8 @@ class EventsChildDao(BaseDao):
                     EventsChild._events_id == events_child.events.id
                 )
             ).first()
+            if not events_child_db:
+                return None, ErrorEnum.event_child_not_found
             print(events_child_db)
             events_child_db._status = events_child.status
             sess.commit()
@@ -220,6 +230,8 @@ class EventsChildDao(BaseDao):
                     EventsChild._events_id == events_child.events.id
                 )
             ).first()
+            if not events_child_db:
+                return None, ErrorEnum.event_child_not_found
             events_child_db._hours_event = events_child.hours_event
             sess.commit()
         return events_child, None

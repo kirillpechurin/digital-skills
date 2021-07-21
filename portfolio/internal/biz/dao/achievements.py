@@ -3,6 +3,7 @@ from typing import Tuple
 
 from sqlalchemy import insert, delete
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_DETAIL_ACHIEVEMENTS
 from portfolio.models.achievements import Achievements
@@ -67,7 +68,7 @@ class AchievementsDao(BaseDao):
                 Achievements._events_id == events_id
             ).all()
         if not data:
-            return None, None
+            return None, ErrorEnum.achievement_not_found
         data = [dict(row) for row in data]
         return AchievementsDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS), None
 

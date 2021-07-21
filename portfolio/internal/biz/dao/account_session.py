@@ -1,5 +1,6 @@
 from sqlalchemy import insert
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.models.account_main import AccountMain
 from portfolio.models.account_session import AccountSession
@@ -18,9 +19,6 @@ class AccountSessionDao(BaseDao):
         with self.session() as sess:
             row = sess.execute(sql).first()
             sess.commit()
-        print(row)
-        if not row:
-            return None, None
         row = dict(row)
         account_session.id = row['account_session_id']
         return account_session, None
@@ -33,7 +31,7 @@ class AccountSessionDao(BaseDao):
                 AccountSession._id == session_id
             ).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.session_not_found
         row = dict(row)
         return AccountSession(id=row['account_session_account_main_id']), None
 
@@ -42,9 +40,13 @@ class AccountSessionDao(BaseDao):
             row = sess.query(
                 AccountSession._account_main_id.label('account_session_account_main_id'),
                 AccountMain._is_confirmed.label('account_main_is_confirmed')
-            ).join(AccountSession._account_main).where(AccountSession._id == session_id).first()
+            ).join(
+                AccountSession._account_main
+            ).where(
+                AccountSession._id == session_id
+            ).first()
         if not row:
-            return None, None
+            return None, ErrorEnum.session_not_found
         row = dict(row)
         return AccountMain(
             id=row['account_session_account_main_id'],

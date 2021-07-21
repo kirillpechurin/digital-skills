@@ -4,9 +4,9 @@ from datetime import date, datetime
 from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
+from portfolio.enums.success.success_enum import SuccessEnum
 from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FOR_ADD_ACHIEVEMENT, \
     DES_FOR_EDIT_ACHIEVEMENT
-from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer
 from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
 from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT, DES_FOR_EDIT_EVENT
@@ -46,11 +46,17 @@ def main_page(auth_account_main_id: int, organisation_id: int):
 
         info_organisation, err = OrganisationService.get_by_id(organisation.id)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         list_employee, err = EmployeeService.get_list_employee_by_org_id(organisation.id)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         response = make_response(render_template(
             'organisation/index.html',
             info_organisation=info_organisation,
@@ -68,14 +74,21 @@ def add_employee(auth_account_main_id: int, organisation_id: int):
                                                    surname=request.form['surname'],
                                                    specialty=request.form['specialty']))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         teacher = EmployeeDeserializer.deserialize(request.form, DES_FOR_ADD_EMPLOYEE)
         teacher.organisation = Organisation(id=organisation_id,
                                             account_main=AccountMain(id=auth_account_main_id))
         teacher, err = EmployeeService.add_employee(teacher)
         if err:
-            return json.dumps(err)
-        flash('Сотрудник успешно добавлен!')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.add)
         response = make_response(
             redirect(url_for('organisation/private_office.main_page'))
         )
@@ -91,14 +104,21 @@ def edit_employee(auth_account_main_id: int, organisation_id: int, employee_id: 
                                                     surname=request.form['surname'],
                                                     specialty=request.form['specialty']))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         employee = EmployeeDeserializer.deserialize(request.form, DES_FOR_EDIT_EMPLOYEE)
         employee.id = employee_id
         teacher, err = EmployeeService.update_employee(employee)
         if err:
-            return json.dumps(err)
-        flash('Сотрудник успешно обновлен!')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         response = make_response(
             redirect(
                 url_for(
@@ -117,12 +137,18 @@ def delete_employee(auth_account_main_id: int, organisation_id: int, employee_id
         employee = Employee(id=employee_id)
         employee, err = EmployeeService.delete_employee(employee)
         if err:
-            return json.dumps(err)
-        flash("Успешно удален")
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.delete)
         resp = make_response(
-            redirect(url_for(
-                'organisation/private_office.main_page'
-            ))
+            redirect(
+                url_for(
+                    'organisation/private_office.main_page'
+                )
+            )
         )
         return resp
 
@@ -135,11 +161,19 @@ def get_detail_employee(auth_account_main_id: int, organisation_id: int, employe
 
         info_organisation, err = OrganisationService.get_by_id(organisation.id)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         employee = Employee(id=employee_id)
         employee, err = EmployeeService.get_by_employee_id(employee)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         response = make_response(
             render_template(
                 'organisation/detail_teacher.html',
@@ -159,13 +193,21 @@ def add_event(auth_account_main_id: int, organisation_id: int):
                                                 event_hours=request.form['hours'],
                                                 skill=request.form['skill']))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         event: Events = EventsDeserializer.deserialize(request.form, DES_FOR_ADD_EVENT)
         event.organisation = Organisation(id=organisation_id)
         event, err = EventsService.add_event(event)
         if err:
-            return None, err
-        flash('Событие успешно добавлено')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.add)
         resp = make_response(
             redirect(url_for('organisation/private_office.get_list_events'))
         )
@@ -185,7 +227,11 @@ def get_requests(auth_account_main_id: int, organisation_id: int):
         )
         list_request_to_organisation, err = RequestToOrganisationService.get_all_requests_by_org_id(request_to_organisation)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'organisation/requests.html',
@@ -207,7 +253,11 @@ def get_detail_request(auth_account_main_id: int, organisation_id: int, request_
         )
         request_to_organisation, err = RequestToOrganisationService.get_request_by_org_id(request_to_organisation)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'organisation/detail_request.html',
@@ -231,8 +281,12 @@ def reject_request(auth_account_main_id: int, organisation_id: int, request_id: 
         )
         request_to_organisation, err = RequestToOrganisationService.delete_request(request_to_organisation)
         if err:
-            return json.dumps(err)
-        flash('Отклонено')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.reject)
         resp = make_response(
             redirect(url_for('organisation/private_office.get_requests'))
         )
@@ -254,6 +308,10 @@ def approve_req(auth_account_main_id: int, organisation_id: int, request_id: int
         request_to_organisation, err = RequestToOrganisationService.accept_request(request_to_organisation)
         if err:
             flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             redirect(url_for('organisation/private_office.get_requests'))
         )
@@ -265,9 +323,12 @@ def approve_req(auth_account_main_id: int, organisation_id: int, request_id: int
 def get_list_learners(auth_account_main_id: int, organisation_id: int):
     if request.method == 'GET':
         list_learners, err = ChildrenOrganisationService.get_list_children_by_org_id(organisation_id)
-        print(list_learners)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'organisation/pupils.html',
@@ -285,15 +346,25 @@ def get_detail_children(children_org_id: int, auth_account_main_id: int, organis
         children_organisation = ChildrenOrganisation(id=children_org_id)
         activity_child, err = EventsChildService.get_by_children_organisation_id(children_organisation)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         children_org, err = ChildrenOrganisationService.get_children_by_children_org_id(children_organisation)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         list_achievements_for_completed_events, err = AchievementsService.get_all_by_completed_events_id(activity_child.list_completed_events)
         if err:
-            return json.dumps(err)
-        for complete_event in activity_child.list_completed_events:
-            print(complete_event.events.hours)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'organisation/learner.html',
@@ -313,7 +384,6 @@ def get_detail_children(children_org_id: int, auth_account_main_id: int, organis
 @get_org_id_and_acc_id_with_confirmed_email
 def update_status_event_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int, events_id: int):
     if request.method == 'POST':
-        print(request.form)
         events_child = EventsChild(
             events=Events(id=events_id),
             children_organisation=ChildrenOrganisation(id=children_org_id),
@@ -321,8 +391,12 @@ def update_status_event_for_child(children_org_id: int, auth_account_main_id: in
         )
         events_child, err = EventsChildService.update_status(events_child)
         if err:
-            return None, err
-        flash("Успешно обновлено!")
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
@@ -344,8 +418,12 @@ def update_complete_event_for_child(children_org_id: int, auth_account_main_id: 
         )
         events_child, err = EventsChildService.update_hours(events_child)
         if err:
-            return None, err
-        flash('Успешно обнолено!')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
@@ -356,7 +434,6 @@ def update_complete_event_for_child(children_org_id: int, auth_account_main_id: 
 @get_org_id_and_acc_id_with_confirmed_email
 def add_achievement_for_child(children_org_id: int, auth_account_main_id: int, organisation_id: int):
     if request.method == 'POST':
-        print(request.headers.get("Referer"))
         achievements_child = AchievementsChild(
             point=request.form.get('point'),
             achievements=Achievements(id=request.form.get('achievement_id')),
@@ -364,7 +441,11 @@ def add_achievement_for_child(children_org_id: int, auth_account_main_id: int, o
         )
         achievements_child, err = AchievementsChildService.add_achievement(achievements_child)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
@@ -382,7 +463,11 @@ def update_achievement_child(children_org_id: int, auth_account_main_id: int, or
         )
         achievement_child, err = AchievementsChildService.update_by_id(achievement_child)
         if err:
-            return None, err
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
         )
@@ -400,7 +485,10 @@ def delete_achievement_for_child(children_org_id: int, auth_account_main_id: int
         )
         achievement_child, err = AchievementsChildService.delete_by_id(achievement_child)
         if err:
-            return None, err
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         resp = make_response(
             redirect(url_for('organisation/private_office.get_detail_children', children_org_id=children_org_id))
@@ -414,7 +502,11 @@ def get_list_events(auth_account_main_id: int, organisation_id: int):
     if request.method == 'GET':
         list_events, err = EventsService.get_all_events_by_organisation_id(organisation_id)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         response = make_response(
             render_template(
                 'organisation/events.html',
@@ -431,12 +523,18 @@ def detail_event(auth_account_main_id: int, organisation_id: int, events_id: int
         events = Events(id=events_id)
         event, err = EventsService.get_by_events_id(events)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         achievements = Achievements(events=event)
         list_achievements, err = AchievementsService.get_by_events_id(achievements)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         resp = make_response(
             render_template(
@@ -458,14 +556,21 @@ def edit_event(auth_account_main_id: int, organisation_id: int, events_id: int):
                                                  hours=request.form.get('event_hours'),
                                                  skill=request.form.get('skill')))
         if errors:
-            return json.dumps(errors)
-        print(request.form)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         event = EventsDeserializer.deserialize(request.form, DES_FOR_EDIT_EVENT)
         event.id = events_id
         event, err = EventsService.update_event(event)
         if err:
-            return json.dumps(err)
-        flash('Успешно обнолено!')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )
@@ -485,8 +590,12 @@ def add_achievement(auth_account_main_id: int, organisation_id: int, events_id: 
         achievement.events = Events(id=events_id)
         achievement, err = AchievementsService.add_achievement(achievement)
         if err:
-            return flash(err)
-        flash('Успешно добавили достижение!')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.add)
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )
@@ -503,8 +612,12 @@ def delete_achievement(auth_account_main_id: int, organisation_id: int, events_i
         )
         achievement, err = AchievementsService.delete_achievement(achievement)
         if err:
-            return flash(err)
-        flash('Успешно удалено')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.delete)
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )
@@ -519,14 +632,22 @@ def edit_achievement(auth_account_main_id: int, organisation_id: int, events_id:
                                                        nomination=request.form.get('nomination'),
                                                        points=request.form.get('points')))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         achievement = AchievementsDeserializer.deserialize(request.form, DES_FOR_EDIT_ACHIEVEMENT)
         achievement.id = achievement_id
         achievement.events = Events(id=events_id)
         achievement, err = AchievementsService.edit_achievement(achievement)
         if err:
-            return flash(err)
-        flash('Успешно обновлено')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         resp = make_response(
             redirect(url_for('organisation/private_office.detail_event', events_id=events_id))
         )
@@ -545,7 +666,10 @@ def calendar(auth_account_main_id: int, organisation_id: int):
 
         events_for_date, err = EventsService.get_events_by_date(organisation_id, calendar_date)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         calendar, month_str = get_calendar()
         resp = make_response(

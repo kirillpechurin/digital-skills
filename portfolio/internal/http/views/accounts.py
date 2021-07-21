@@ -4,6 +4,8 @@ from typing import List
 from flask import Blueprint, request, make_response, render_template, url_for, session, flash
 from werkzeug.utils import redirect
 
+from portfolio.enums.error.errors_enum import ErrorEnum
+from portfolio.enums.success.success_enum import SuccessEnum
 from portfolio.internal.biz.deserializers.account_main import DES_FROM_REGISTER, AccountMainDeserializer, DES_FROM_LOGIN
 from portfolio.internal.biz.services.account_main import AccountMainService
 from portfolio.internal.biz.services.auth_service import AuthService
@@ -29,7 +31,6 @@ def register(account_role_id: int = None,
     if request.method == 'POST':
         organisation = None
         parent = None
-        print(request.form)
         if account_role_id == 1:  # Organisation
             errors = RegisterOrganisationSchema().validate(dict(
                 name=request.form.get('name'),
@@ -52,9 +53,12 @@ def register(account_role_id: int = None,
             parent = Parents(name=request.form.get('name'),
                              surname=request.form.get('surname'))
         else:
-            errors = NotImplementedError
+            errors = ErrorEnum.not_implemented
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         account_main = AccountMainDeserializer.deserialize(request.form, DES_FROM_REGISTER)
         account_main.account_role = AccountRole(id=account_role_id)
@@ -64,7 +68,10 @@ def register(account_role_id: int = None,
             parent.account_main = account_main
         account_main, errors = AuthService.register(account_main, organisation, parent)
         if errors:
-            return json.dumps(errors)
+            flash(errors)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         if account_main.is_confirmed:
             return redirect(url_for('account.detail'))
         return render_template('account/registration.html',
@@ -88,7 +95,10 @@ def confirm_code():
     auth_code = AuthCode(code=request.form.get('code'))
     _, err = AuthService.confirm_code(auth_code)
     if err:
-        return json.dumps(err)
+        flash(err)
+        return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
     return redirect(url_for('account.login'))
 
@@ -98,7 +108,10 @@ def confirm_code():
 def get_detail_info(auth_account_main_id: int):
     account_main, err = AccountMainService.get_detail_account_info(auth_account_main_id)
     if err:
-        return json.dumps(err)
+        flash(err)
+        return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
     response = make_response(render_template(
         'account/detail.html',
@@ -114,15 +127,22 @@ def login():
         errors = LoginAuthSchema().validate(dict(email=request.form['email'],
                                                  password=request.form['password']))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
 
         account_main = AccountMainDeserializer.deserialize(request.form, DES_FROM_LOGIN)
         account_main, err = AuthService.auth_login(account_main)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         session['auth-token'] = account_main.auth_token
         return redirect(url_for('account.get_detail_info'))
-    return render_template('account/login.html', errors=None)
+    elif request.method == "GET":
+        return render_template('account/login.html', errors=None)
 
 
 @account.route('/edit_password', methods=['GET', 'POST'])
@@ -135,14 +155,25 @@ def edit_password(auth_account_main_id: int):
             repeat_new_password=request.form['repeat_new_password']
         ))
         if errors:
-            return json.dumps(errors)
+            flash(str(errors))
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         if request.form['new_password'] != request.form['repeat_new_password']:
-            return json.dumps('Пароли не одинаковы')
+            flash(ErrorEnum.password_is_not_equal)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         account_main = AccountMain(id=auth_account_main_id, password=request.form['new_password'])
         account_main, err = AuthService.update_password(request.form['old_password'], account_main)
         if err:
-            return json.dumps(err)
-        flash('Успешно обновили пароль')
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
+        flash(SuccessEnum.update)
         resp = make_response(
             redirect(
                 url_for('account.get_detail_info')

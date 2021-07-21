@@ -1,6 +1,8 @@
 
 from flask import Blueprint, request, json, url_for, redirect, make_response, render_template, flash
 
+from portfolio.enums.error.errors_enum import ErrorEnum
+from portfolio.enums.success.success_enum import SuccessEnum
 from portfolio.internal.biz.services.children import ChildrenService
 from portfolio.internal.biz.services.employee import EmployeeService
 from portfolio.internal.biz.services.events import EventsService
@@ -25,7 +27,10 @@ def list_organisation(auth_account_main_id: int, parent_id: int):
         organisations, err = OrganisationService.get_all_organisations()
 
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
         response = make_response(render_template(
             'main/list_organisations.html',
             organisations=organisations
@@ -38,10 +43,26 @@ def list_organisation(auth_account_main_id: int, parent_id: int):
 def detail_organisation(auth_account_main_id: int, parent_id: int, organisation_id: int):
     if request.method == 'GET':
         organisation, err = OrganisationService.get_by_id(organisation_id)
+        if err:
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         list_employee, err = EmployeeService.get_list_employee_by_org_id(organisation.id)
+        if err:
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         list_active_events, err = EventsService.get_active_events_by_organisation_id(organisation.id)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'main/detail_organisation.html',
@@ -62,7 +83,11 @@ def detail_event(auth_account_main_id: int, parent_id: int, organisation_id: int
         events = Events(id=events_id)
         event, err = EventsService.get_by_events_id(events)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         children = Children(
             parents=Parents(
                 id=parent_id,
@@ -70,7 +95,11 @@ def detail_event(auth_account_main_id: int, parent_id: int, organisation_id: int
         )
         list_children, err = ChildrenService.get_children_by_parents_id(children)
         if err:
-            return json.dumps(err)
+            flash(err)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         resp = make_response(
             render_template(
                 'main/detail_event.html',
@@ -88,7 +117,11 @@ def make_request(auth_account_main_id: int, organisation_id, events_id, parent_i
     if request.method == 'POST':
         children_id = int(request.form.get('child_id'))
         if not children_id:
-            return flash('Выберите ребенка, которого нужно зарегистрировать на это событие')
+            flash(ErrorEnum.select_child_for_request)
+            return make_response(
+                redirect(request.headers.get("Referer"))
+            )
+
         request_to_organisation = RequestToOrganisation(
             parents=Parents(id=parent_id),
             events=Events(id=events_id,
@@ -103,7 +136,7 @@ def make_request(auth_account_main_id: int, organisation_id, events_id, parent_i
             )
             return resp
 
-        flash('Успешно зарегистрировали заявку, ждите ответа от организации!')
+        flash(SuccessEnum.register_request)
         resp = make_response(
             redirect(url_for('main.detail_event', events_id=events_id, organisation_id=organisation_id))
         )

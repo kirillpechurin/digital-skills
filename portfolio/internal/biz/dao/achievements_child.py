@@ -1,5 +1,7 @@
+import sqlalchemy
 from sqlalchemy import insert, delete
 
+from portfolio.enums.error.errors_enum import ErrorEnum
 from portfolio.internal.biz.dao.base_dao import BaseDao
 from portfolio.internal.biz.deserializers.achievements_child import AchievementsChildDeserializer, \
     DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID
@@ -80,9 +82,17 @@ class AchievementsChildDao(BaseDao):
             AchievementsChild._edited_at.label('achievements_child_edited_at'),
         )
         with self.session() as sess:
-            row = sess.execute(sql).first()
-            sess.commit()
-        row = dict(row)
+            try:
+                row = sess.execute(sql).first()
+                sess.commit()
+                row = dict(row)
+            except sqlalchemy.exc.IntegrityError as exception:
+                if str(exception.orig)[48:48 + len("unique_point_achievement")] == 'unique_point_achievement':
+                    return None, ErrorEnum.unique_point_achievement
+                elif str(exception.orig)[48:48 + len('unique_achievement_for_children')] == 'unique_achievement_for_children':
+                    return None, ErrorEnum.unique_achievement_for_children
+                else:
+                    raise TypeError
         achievements_child.id = row['achievements_child_id']
         achievements_child.edited_at = row['achievements_child_created_at']
         achievements_child.created_at = row['achievements_child_edited_at']
