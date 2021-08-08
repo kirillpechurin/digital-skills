@@ -21,7 +21,7 @@ from portfolio.models.children_organisation import ChildrenOrganisation
 from portfolio.models.events_child import EventsChild
 from portfolio.models.parents import Parents
 
-private_office_parents = Blueprint('parents/private_office', __name__, template_folder='templates/private_office', static_folder='static/private_office')
+private_office_parents = Blueprint('api/parents/private_office', __name__, template_folder='templates/private_office', static_folder='static/private_office')
 
 
 @private_office_parents.route('/main', methods=['GET', 'POST'])

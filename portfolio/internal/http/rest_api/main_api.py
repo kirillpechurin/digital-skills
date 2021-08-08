@@ -18,7 +18,7 @@ from portfolio.models.organisation import Organisation
 from portfolio.models.parents import Parents
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
-main = Blueprint('main', __name__, template_folder='templates/main', static_folder='static/main')
+main = Blueprint('api/main', __name__, template_folder='templates/main', static_folder='static/main')
 
 
 @main.route('/organisations', methods=['GET'])

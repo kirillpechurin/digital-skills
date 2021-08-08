@@ -6,7 +6,7 @@ from portfolio.internal.http.rest_api.blueprint.rest_api import rest_apis
 
 def init_http_server():
     FlaskServer.set_api(apis)
-    FlaskServer.set_rest_api(apis)
+    FlaskServer.set_rest_api(rest_apis)
     FlaskServer.set_config(SECRET_KEY_SESSION)
 
 

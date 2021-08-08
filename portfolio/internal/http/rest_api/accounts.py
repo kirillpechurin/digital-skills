@@ -24,7 +24,7 @@ from portfolio.models.auth_code import AuthCode
 from portfolio.models.organisation import Organisation
 from portfolio.models.parents import Parents
 
-account = Blueprint('account', __name__, template_folder='account', static_folder='/account')
+account = Blueprint('api/account', __name__, template_folder='account', static_folder='/account')
 
 
 @account.route("/register", methods=['GET', 'POST'])

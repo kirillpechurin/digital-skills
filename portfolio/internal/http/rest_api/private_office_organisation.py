@@ -29,8 +29,7 @@ from portfolio.internal.http.rest_api.answers.children_organisation import get_r
 from portfolio.internal.http.rest_api.answers.events import get_response_list_events, get_response_detail_events, \
     get_response_detail_events_for_date
 from portfolio.internal.http.rest_api.answers.organisation import get_response_detail_organisation_employee
-from portfolio.internal.http.rest_api.answers.request_to_organisation import get_response_list_requests, \
-    get_response_detail_requests, get_response_detail_request
+from portfolio.internal.http.rest_api.answers.request_to_organisation import get_response_list_requests, get_response_detail_request
 from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
 from portfolio.models.account_main import AccountMain
 from portfolio.models.achievements import Achievements
@@ -42,7 +41,7 @@ from portfolio.models.events_child import EventsChild
 from portfolio.models.organisation import Organisation
 from portfolio.models.request_to_organisation import RequestToOrganisation
 
-private_office_organisation = Blueprint('organisation/private_office', __name__, template_folder='templates/organisation/private_office', static_folder='static/organisation/private_office')
+private_office_organisation = Blueprint('api/organisation/private_office', __name__, template_folder='templates/organisation/private_office', static_folder='static/organisation/private_office')
 
 
 @private_office_organisation.route('/', methods=['GET'])

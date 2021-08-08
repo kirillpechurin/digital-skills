@@ -28,10 +28,10 @@ class FlaskServer:
     def set_rest_api(cls, rest_apis: List[Blueprint] or Blueprint):
         for rest_api in rest_apis:
             print(rest_api.name)
-            if rest_api.name == 'main':
-                cls._app.register_blueprint(rest_api, url_prefix='/api/')
+            if rest_api.name == 'api/main':
+                cls._app.register_blueprint(rest_api, url_prefix='/')
             else:
-                cls._app.register_blueprint(rest_api, url_prefix=f"/api/{rest_api.name}")
+                cls._app.register_blueprint(rest_api, url_prefix=f"/{rest_api.name}")
 
     @classmethod
     def run_server(cls, host: str, port: int, debug: bool):

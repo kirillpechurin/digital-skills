@@ -2,8 +2,6 @@ from typing import List, Dict
 
 from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
 from portfolio.internal.biz.serializers.events_child import EventsChildSerializer, SER_FOR_DETAIL_EVENTS_CHILD
-from portfolio.internal.biz.serializers.organisation import OrganisationSerializer, \
-    SER_FOR_DETAIL_ORGANISATION_FOR_PARENTS
 from portfolio.models.children import Children
 
 SER_FOR_DETAIL_CHILD = 'ser-for-detail-child'
@@ -84,7 +82,10 @@ class ChildrenSerializer(BaseSerializer):
                 for event in dict_for_ser.get('complete_events')
             ],
             "list_organisation_for_child": [
-                OrganisationSerializer.serialize(org, SER_FOR_DETAIL_ORGANISATION_FOR_PARENTS)
+                {
+                    "id": org.id,
+                    "name": org.name
+                }
                 for org in dict_for_ser.get('list_organisation_for_child')
             ],
         }
