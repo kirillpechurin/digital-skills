@@ -3,10 +3,10 @@ from datetime import datetime as dt
 
 from sqlalchemy import and_, insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_GET_DETAIL_EVENT, DES_FROM_DB_EVENTS_ORG
-from portfolio.models.events import Events
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_GET_DETAIL_EVENT, DES_FROM_DB_EVENTS_ORG
+from models.events import Events
 
 
 class EventsDao(BaseDao):

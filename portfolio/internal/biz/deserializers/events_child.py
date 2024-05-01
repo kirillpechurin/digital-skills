@@ -1,12 +1,12 @@
 from typing import List
 
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
     DES_FROM_DB_GET_DETAIL_LEARNER
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_GET_DETAIL_EVENT
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events_child import EventsChild
-from portfolio.models.organisation import Organisation
+from internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_GET_DETAIL_EVENT
+from models.children_organisation import ChildrenOrganisation
+from models.events_child import EventsChild
+from models.organisation import Organisation
 
 DES_FROM_DB_GET_EVENTS = "des-from-db-get-active-events"
 DES_FROM_DB_GET_INFO_CHILD_ORGANISATION = "des-from-db-get-info-child-organisation"

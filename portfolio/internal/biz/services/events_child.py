@@ -1,11 +1,11 @@
 from datetime import date, timedelta
 import random
 
-from portfolio.internal.biz.dao.achievements_child import AchievementsChildDao
-from portfolio.internal.biz.dao.events_child import EventsChildDao
-from portfolio.models.activity_child import ActivityChild
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events_child import EventsChild
+from internal.biz.dao.achievements_child import AchievementsChildDao
+from internal.biz.dao.events_child import EventsChildDao
+from models.activity_child import ActivityChild
+from models.children_organisation import ChildrenOrganisation
+from models.events_child import EventsChild
 
 
 COLORS_SKILL = [

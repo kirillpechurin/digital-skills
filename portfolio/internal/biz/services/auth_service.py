@@ -1,14 +1,12 @@
-from load_env import LIFETIME_CODE
-from portfolio.drivers.mail_server import MailServer, EMAIL_CODE_TYPE
-from portfolio.internal.biz.dao.account_main import AccountMainDao
-from portfolio.internal.biz.dao.account_session import AccountSessionDao
-from portfolio.internal.biz.dao.auth_code import AuthCodeDao
-from portfolio.internal.biz.dao.organisation import OrganisationDao
-from portfolio.internal.biz.dao.parents import ParentsDao
-from portfolio.internal.biz.services.utils import get_passed_time
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_session import AccountSession
-from portfolio.models.auth_code import AuthCode
+from drivers.mail_server import MailServer, EMAIL_CODE_TYPE
+from internal.biz.dao.account_main import AccountMainDao
+from internal.biz.dao.account_session import AccountSessionDao
+from internal.biz.dao.auth_code import AuthCodeDao
+from internal.biz.dao.organisation import OrganisationDao
+from internal.biz.dao.parents import ParentsDao
+from models.account_main import AccountMain
+from models.account_session import AccountSession
+from models.auth_code import AuthCode
 
 
 class AuthService:

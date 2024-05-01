@@ -1,4 +1,4 @@
-from portfolio.configs.mail_server import MAIL_FROM, MAIL_HOST, MAIL_PORT, MAIL_PASSWORD
+from configs.settings import MAIL_FROM, MAIL_HOST, MAIL_PORT, MAIL_PASSWORD
 
 import yagmail
 
@@ -12,7 +12,7 @@ class MailServer:
     @classmethod
     def send_email(cls, message_type: str, address: str, message: str):
         sender = cls._get_sender(message_type)
-        return sender(address, message)
+        return sender(cls, address, message)
 
     @classmethod
     def _get_sender(cls, message_type: str):
@@ -25,17 +25,20 @@ class MailServer:
         else:
             raise TypeError
 
-    @staticmethod
-    def _email_code_sender(address: str, message: str) -> bool:
-
+    @classmethod
+    def _get_connection(cls):
         yagmail.register(MAIL_FROM, MAIL_PASSWORD)
+        return yagmail.SMTP(
+            user=MAIL_FROM,
+        )
 
-        yag = yagmail.SMTP(MAIL_FROM)
+    @staticmethod
+    def _email_code_sender(cls, address: str, message: str) -> bool:
+        yag = cls._get_connection()
 
         to = address
         body = message
         subject = "Код подтверждения для Portfolio"
-        print(address)
         try:
             yag.send(to=to,
                      subject=subject,
@@ -51,10 +54,8 @@ class MailServer:
             print("final")
 
     @staticmethod
-    def _email_temp_psw_sender(address: str, message: str) -> bool:
-        yagmail.register(MAIL_FROM, MAIL_PASSWORD)
-
-        yag = yagmail.SMTP(MAIL_FROM)
+    def _email_temp_psw_sender(cls, address: str, message: str) -> bool:
+        yag = cls._get_connection()
 
         to = address
         body = message
@@ -75,10 +76,8 @@ class MailServer:
             print("final")
 
     @staticmethod
-    def _email_accept_request(address: str, message: str) -> bool:
-        yagmail.register(MAIL_FROM, MAIL_PASSWORD)
-
-        yag = yagmail.SMTP(MAIL_FROM)
+    def _email_accept_request(cls, address: str, message: str) -> bool:
+        yag = cls._get_connection()
 
         to = address
         body = f'Статус вашей заявки: {message}'

@@ -1,12 +1,12 @@
 import sqlalchemy.exc
 from sqlalchemy import insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.organisation import OrganisationDeserializer, DES_FROM_DB_ALL_ORGANISATIONS, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.organisation import OrganisationDeserializer, DES_FROM_DB_ALL_ORGANISATIONS, \
     DES_FROM_DB_DETAIL_ORGANISATION
-from portfolio.models.account_main import AccountMain
-from portfolio.models.organisation import Organisation
+from models.account_main import AccountMain
+from models.organisation import Organisation
 
 
 class OrganisationDao(BaseDao):

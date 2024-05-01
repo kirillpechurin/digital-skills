@@ -1,12 +1,11 @@
-import hashlib
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.organisation import Organisation
+from models.abstract_model import AbstractModel
+from models.organisation import Organisation
 
 
 class Employee(AbstractModel):
@@ -15,7 +14,7 @@ class Employee(AbstractModel):
     _name = Column(name='name', type_=String, nullable=False)
     _surname = Column(name='surname', type_=String, nullable=False)
     _specialty = Column(name='specialty', type_=String, nullable=False)
-    _organisation_id = Column(ForeignKey("organisation.id", ondelete="CASCADE", onupdate="CASCADE"), name='organisation_id', type_=String, nullable=False)
+    _organisation_id = Column(ForeignKey("organisation.id", ondelete="CASCADE", onupdate="CASCADE"), name='organisation_id', type_=Integer, nullable=False)
     _organisation = relationship("Organisation")
 
     def __init__(self,

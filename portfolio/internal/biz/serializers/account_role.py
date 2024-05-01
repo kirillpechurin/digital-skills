@@ -1,7 +1,7 @@
 from typing import List
 
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.models.account_role import AccountRole
+from internal.biz.serializers.base_serializer import BaseSerializer
+from models.account_role import AccountRole
 
 SER_FOR_GET_REGISTER = 'ser-for-get-register'
 

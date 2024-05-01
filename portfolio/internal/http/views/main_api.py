@@ -1,20 +1,20 @@
 
 from flask import Blueprint, request, json, url_for, redirect, make_response, render_template, flash
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.enums.success.success_enum import SuccessEnum
-from portfolio.internal.biz.services.children import ChildrenService
-from portfolio.internal.biz.services.employee import EmployeeService
-from portfolio.internal.biz.services.events import EventsService
-from portfolio.internal.biz.services.organisation import OrganisationService
-from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
-from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
-from portfolio.models.account_main import AccountMain
-from portfolio.models.children import Children
-from portfolio.models.events import Events
-from portfolio.models.organisation import Organisation
-from portfolio.models.parents import Parents
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from enums.error.errors_enum import ErrorEnum
+from enums.success.success_enum import SuccessEnum
+from internal.biz.services.children import ChildrenService
+from internal.biz.services.employee import EmployeeService
+from internal.biz.services.events import EventsService
+from internal.biz.services.organisation import OrganisationService
+from internal.biz.services.request_to_organisation import RequestToOrganisationService
+from internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
+from models.account_main import AccountMain
+from models.children import Children
+from models.events import Events
+from models.organisation import Organisation
+from models.parents import Parents
+from models.request_to_organisation import RequestToOrganisation
 
 main = Blueprint('main', __name__, template_folder='templates/main', static_folder='static/main')
 

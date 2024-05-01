@@ -2,11 +2,11 @@ from datetime import datetime
 
 from sqlalchemy import insert, delete
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FROM_DB_ALL_EMPLOYEE, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.employee import EmployeeDeserializer, DES_FROM_DB_ALL_EMPLOYEE, \
     DES_FROM_DB_DETAIL_EMPLOYEE
-from portfolio.models.employee import Employee
+from models.employee import Employee
 
 
 class EmployeeDao(BaseDao):

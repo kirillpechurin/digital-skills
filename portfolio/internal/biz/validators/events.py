@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from portfolio.internal.biz.validators.utils import date_validate
+from internal.biz.validators.utils import date_validate
 
 
 class AddEventSchema(Schema):

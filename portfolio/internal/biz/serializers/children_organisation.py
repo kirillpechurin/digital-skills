@@ -1,11 +1,11 @@
 from typing import List, Dict
 
-from portfolio.internal.biz.serializers.achievements_child import AchievementsChildSerializer, \
+from internal.biz.serializers.achievements_child import AchievementsChildSerializer, \
     SER_FOR_DETAIL_ACHIEVEMENT_CHILD
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.internal.biz.serializers.children import ChildrenSerializer, SER_FOR_DETAIL_CHILDREN
-from portfolio.internal.biz.serializers.events_child import EventsChildSerializer, SER_FOR_DETAIL_EVENTS_CHILD
-from portfolio.models.children_organisation import ChildrenOrganisation
+from internal.biz.serializers.base_serializer import BaseSerializer
+from internal.biz.serializers.children import ChildrenSerializer, SER_FOR_DETAIL_CHILDREN
+from internal.biz.serializers.events_child import EventsChildSerializer, SER_FOR_DETAIL_EVENTS_CHILD
+from models.children_organisation import ChildrenOrganisation
 
 SER_FOR_LIST_LEARNERS = 'ser-for-list-learners'
 SER_FOR_DETAIL_LEARNER = 'ser-for-detail-learner'

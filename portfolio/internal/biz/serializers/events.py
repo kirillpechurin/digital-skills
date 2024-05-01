@@ -1,8 +1,8 @@
 from typing import List, Dict
 
-from portfolio.internal.biz.serializers.achievements import AchievementsSerializer, SER_FOR_DETAIL_ACHIEVEMENT
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.models.events import Events
+from internal.biz.serializers.achievements import AchievementsSerializer, SER_FOR_DETAIL_ACHIEVEMENT
+from internal.biz.serializers.base_serializer import BaseSerializer
+from models.events import Events
 
 SER_FOR_DETAIL_EVENTS = 'ser-for-detail-events'
 SER_FOR_DETAIL_EVENTS_ACHIEVEMENTS = 'ser-for-detail-events-achievements'

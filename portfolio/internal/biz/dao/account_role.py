@@ -1,7 +1,11 @@
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.account_role import AccountRoleDeserializer, SER_FOR_GET_LIST_ACCOUNT_ROLE
-from portfolio.models.account_role import AccountRole
+from typing import List
+
+import sqlalchemy
+
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.account_role import AccountRoleDeserializer, SER_FOR_GET_LIST_ACCOUNT_ROLE
+from models.account_role import AccountRole
 
 
 class AccountRoleDao(BaseDao):
@@ -12,7 +16,6 @@ class AccountRoleDao(BaseDao):
                 AccountRole._id.label("account_role_id"),
                 AccountRole._name.label("account_role_name")
             ).where(AccountRole._id == account_role_id).first()
-        print(row)
         if not row:
             return None, ErrorEnum.account_role_not_found
         row = dict(row)
@@ -27,3 +30,17 @@ class AccountRoleDao(BaseDao):
             ).all()
         data = [dict(row) for row in data]
         return AccountRoleDeserializer.deserialize(data, SER_FOR_GET_LIST_ACCOUNT_ROLE), None
+
+    def bulk_create(self, roles: List[AccountRole]):
+        try:
+            with self.session() as sess:
+                for role in roles:
+                    role._id = role.id
+                    role._name = role.name
+                    sess.add(role)
+                sess.commit()
+        except sqlalchemy.exc.IntegrityError as exception:
+            if 'duplicate key value violates unique constraint "account_role_pkey"' in str(exception.orig):
+                return None, None
+            else:
+                raise TypeError

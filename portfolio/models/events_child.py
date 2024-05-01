@@ -4,9 +4,9 @@ from typing import Optional
 from sqlalchemy import Column, Integer, ForeignKey, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events import Events
+from models.abstract_model import AbstractModel
+from models.children_organisation import ChildrenOrganisation
+from models.events import Events
 
 
 class EventsChild(AbstractModel):

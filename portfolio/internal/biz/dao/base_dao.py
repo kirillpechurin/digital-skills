@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.orm import sessionmaker
 
-from portfolio.drivers.pg_server import Pg
+from drivers.pg_server import Pg
 
 
 class BaseDao:

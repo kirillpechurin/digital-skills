@@ -1,9 +1,9 @@
 import sqlalchemy
 from sqlalchemy import insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.models.parents import Parents
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from models.parents import Parents
 
 
 class ParentsDao(BaseDao):

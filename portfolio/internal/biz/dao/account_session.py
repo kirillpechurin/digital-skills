@@ -1,9 +1,9 @@
 from sqlalchemy import insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_session import AccountSession
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from models.account_main import AccountMain
+from models.account_session import AccountSession
 
 
 class AccountSessionDao(BaseDao):

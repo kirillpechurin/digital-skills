@@ -1,8 +1,8 @@
 from typing import List
 
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from internal.biz.serializers.base_serializer import BaseSerializer
+from internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
+from models.request_to_organisation import RequestToOrganisation
 
 SER_FOR_LIST_REQUESTS = 'ser-for-list-requests'
 SER_FOR_DETAIL_REQUEST = 'ser-for-detail-request'

@@ -5,8 +5,8 @@ from typing import Optional
 from sqlalchemy import Column, String, ForeignKey, Boolean, Integer
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.account_role import AccountRole
+from models.abstract_model import AbstractModel
+from models.account_role import AccountRole
 
 
 class AccountMain(AbstractModel):

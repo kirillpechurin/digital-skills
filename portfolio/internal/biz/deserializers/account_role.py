@@ -1,7 +1,7 @@
 from typing import List
 
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.account_role import AccountRole
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.account_role import AccountRole
 
 SER_FOR_GET_LIST_ACCOUNT_ROLE = 'ser-for-get-list-account-role'
 

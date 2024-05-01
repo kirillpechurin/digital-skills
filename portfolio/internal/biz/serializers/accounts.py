@@ -1,5 +1,5 @@
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.models.account_main import AccountMain
+from internal.biz.serializers.base_serializer import BaseSerializer
+from models.account_main import AccountMain
 
 
 SER_FOR_REGISTER = "ser-for-register"

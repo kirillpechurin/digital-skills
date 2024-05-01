@@ -1,8 +1,8 @@
 from flask import json
 
-from portfolio.internal.biz.services.organisation import OrganisationService
-from portfolio.internal.http.wrappers.auth import required_auth_with_confirmed_email
-from portfolio.models.account_main import AccountMain
+from internal.biz.services.organisation import OrganisationService
+from internal.http.wrappers.auth import required_auth_with_confirmed_email
+from models.account_main import AccountMain
 
 
 def get_org_id_and_acc_id_with_confirmed_email(func):

@@ -1,9 +1,9 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_role import AccountRole
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.account_main import AccountMain
+from models.account_role import AccountRole
 
 DES_FROM_REGISTER = "des-from-register"
-DES_FROM_LOGIN= "des-from-login"
+DES_FROM_LOGIN = "des-from-login"
 DES_FROM_DB_ACCOUNT_MAIN_DETAIL = "des-from-db-account-main-detail"
 
 

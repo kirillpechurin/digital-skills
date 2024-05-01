@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, ForeignKey, Integer, ForeignKeyConstraint, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.achievements import Achievements
-from portfolio.models.children_organisation import ChildrenOrganisation
+from models.abstract_model import AbstractModel
+from models.achievements import Achievements
+from models.children_organisation import ChildrenOrganisation
 
 
 class AchievementsChild(AbstractModel):

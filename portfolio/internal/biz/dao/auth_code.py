@@ -1,9 +1,9 @@
-from sqlalchemy import insert, select, update, delete
+from sqlalchemy import insert, delete
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.models.account_main import AccountMain
-from portfolio.models.auth_code import AuthCode
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from models.account_main import AccountMain
+from models.auth_code import AuthCode
 
 
 class AuthCodeDao(BaseDao):

@@ -1,5 +1,5 @@
-from portfolio.internal.biz.dao.account_role import AccountRoleDao
-from portfolio.models.account_role import AccountRole
+from internal.biz.dao.account_role import AccountRoleDao
+from models.account_role import AccountRole
 
 
 class AccountRoleService:

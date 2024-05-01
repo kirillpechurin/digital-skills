@@ -4,8 +4,8 @@ from typing import Optional, List
 from sqlalchemy import Column, ForeignKey, String, Integer, ARRAY
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.events import Events
+from models.abstract_model import AbstractModel
+from models.events import Events
 
 
 class Achievements(AbstractModel):

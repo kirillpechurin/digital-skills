@@ -4,10 +4,10 @@ from typing import Optional
 from sqlalchemy import Column, Boolean, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.children import Children
-from portfolio.models.events import Events
-from portfolio.models.parents import Parents
+from models.abstract_model import AbstractModel
+from models.children import Children
+from models.events import Events
+from models.parents import Parents
 
 
 class RequestToOrganisation(AbstractModel):

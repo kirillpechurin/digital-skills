@@ -1,6 +1,6 @@
 from enum import Enum
 
-from portfolio.enums.class_property import classproperty
+from enums.utils import classproperty
 
 
 class SuccessEnum(Enum):

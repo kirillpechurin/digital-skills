@@ -1,8 +1,5 @@
-from typing import List
-
-from portfolio.internal.biz.dao.children_organisation import ChildrenOrganisationDao
-from portfolio.models.children import Children
-from portfolio.models.children_organisation import ChildrenOrganisation
+from internal.biz.dao.children_organisation import ChildrenOrganisationDao
+from models.children_organisation import ChildrenOrganisation
 
 
 class ChildrenOrganisationService:

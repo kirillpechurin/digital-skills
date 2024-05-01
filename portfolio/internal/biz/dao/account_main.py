@@ -1,11 +1,10 @@
 import sqlalchemy
 from sqlalchemy import insert, and_
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.account_main import AccountMainDeserializer, DES_FROM_DB_ACCOUNT_MAIN_DETAIL
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_session import AccountSession
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.account_main import AccountMainDeserializer, DES_FROM_DB_ACCOUNT_MAIN_DETAIL
+from models.account_main import AccountMain
 
 UNIQUE_ACCOUNT_EMAIL = "unique_account_email"
 

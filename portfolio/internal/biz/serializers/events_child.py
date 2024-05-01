@@ -1,6 +1,6 @@
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
-from portfolio.models.events_child import EventsChild
+from internal.biz.serializers.base_serializer import BaseSerializer
+from internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
+from models.events_child import EventsChild
 
 SER_FOR_DETAIL_EVENTS_CHILD = 'ser-for-detail-events-child'
 

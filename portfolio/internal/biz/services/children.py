@@ -1,5 +1,5 @@
-from portfolio.internal.biz.dao.children import ChildrenDao
-from portfolio.models.children import Children
+from internal.biz.dao.children import ChildrenDao
+from models.children import Children
 
 
 class ChildrenService:

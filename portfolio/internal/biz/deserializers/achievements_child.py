@@ -1,9 +1,9 @@
-from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, \
+from internal.biz.deserializers.achievements import AchievementsDeserializer, \
     DES_FROM_DB_GET_INFO_ACHIEVEMENTS
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.achievements_child import AchievementsChild
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.organisation import Organisation
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.achievements_child import AchievementsChild
+from models.children_organisation import ChildrenOrganisation
+from models.organisation import Organisation
 
 DES_FROM_DB_ALL_ACHIEVEMENTS = 'des-from-all-achievements'
 DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID = 'des-from-all-achievements-by-child-id'

@@ -1,13 +1,13 @@
 import sqlalchemy
 from sqlalchemy import insert, and_
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.children_organisation import ChildrenOrganisationDeserializer, \
     DES_FROM_DB_LIST_LEARNERS, DES_FROM_DB_GET_DETAIL_LEARNER
-from portfolio.models.children import Children
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.organisation import Organisation
+from models.children import Children
+from models.children_organisation import ChildrenOrganisation
+from models.organisation import Organisation
 
 
 class ChildrenOrganisationDao(BaseDao):
@@ -85,7 +85,6 @@ class ChildrenOrganisationDao(BaseDao):
             ChildrenOrganisation._created_at.label('children_organisation_created_at'),
             ChildrenOrganisation._edited_at.label('children_organisation_edited_at')
         )
-        print('row: ')
         try:
             row = sess.execute(sql).first()
             sess.commit()

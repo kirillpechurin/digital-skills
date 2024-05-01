@@ -1,5 +1,5 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.parents import Parents
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.parents import Parents
 
 DES_FROM_DB_INFO_PARENTS = 'des-from-db-info-parents'
 

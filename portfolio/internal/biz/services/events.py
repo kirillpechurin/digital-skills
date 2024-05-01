@@ -1,7 +1,7 @@
 from datetime import date
 
-from portfolio.internal.biz.dao.events import EventsDao
-from portfolio.models.events import Events
+from internal.biz.dao.events import EventsDao
+from models.events import Events
 
 
 class EventsService:

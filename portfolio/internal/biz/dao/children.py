@@ -1,15 +1,14 @@
 from datetime import datetime
 
-import psycopg2
 import sqlalchemy
 from sqlalchemy import insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILDREN, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILDREN, \
     DES_FROM_DB_INFO_CHILD
-from portfolio.models.children import Children
-from portfolio.models.parents import Parents
+from models.children import Children
+from models.parents import Parents
 
 
 class ChildrenDao(BaseDao):

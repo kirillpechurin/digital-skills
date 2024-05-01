@@ -1,5 +1,5 @@
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.models.achievements import Achievements
+from internal.biz.serializers.base_serializer import BaseSerializer
+from models.achievements import Achievements
 
 SER_FOR_DETAIL_ACHIEVEMENT = 'ser-for-detail-achievement'
 

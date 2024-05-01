@@ -3,21 +3,21 @@ from datetime import datetime, date
 from flask import Blueprint, request, json, make_response, render_template, url_for, flash
 from werkzeug.utils import redirect
 
-from portfolio.enums.success.success_enum import SuccessEnum
-from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FOR_EDIT_CHILD, DES_FOR_ADD_CHILD
-from portfolio.internal.biz.services.achievements_child import AchievementsChildService
-from portfolio.internal.biz.services.children import ChildrenService
-from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
-from portfolio.internal.biz.services.events_child import EventsChildService
-from portfolio.internal.biz.validators.children import EditChildSchema, AddChildrenSchema
-from portfolio.internal.biz.validators.utils import get_calendar
-from portfolio.internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
-from portfolio.models.account_main import AccountMain
-from portfolio.models.achievements_child import AchievementsChild
-from portfolio.models.children import Children
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events_child import EventsChild
-from portfolio.models.parents import Parents
+from enums.success.success_enum import SuccessEnum
+from internal.biz.deserializers.children import ChildrenDeserialize, DES_FOR_EDIT_CHILD, DES_FOR_ADD_CHILD
+from internal.biz.services.achievements_child import AchievementsChildService
+from internal.biz.services.children import ChildrenService
+from internal.biz.services.children_organisation import ChildrenOrganisationService
+from internal.biz.services.events_child import EventsChildService
+from internal.biz.validators.children import EditChildSchema, AddChildrenSchema
+from internal.biz.validators.utils import get_calendar
+from internal.http.wrappers.parents import get_parent_id_and_acc_id_with_confirmed_email
+from models.account_main import AccountMain
+from models.achievements_child import AchievementsChild
+from models.children import Children
+from models.children_organisation import ChildrenOrganisation
+from models.events_child import EventsChild
+from models.parents import Parents
 
 private_office_parents = Blueprint('parents/private_office', __name__, template_folder='templates/private_office', static_folder='static/private_office')
 

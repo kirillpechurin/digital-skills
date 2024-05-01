@@ -2,10 +2,10 @@ import json
 
 from flask import request, session
 
-from portfolio.internal.biz.services.account_role import AccountRoleService
-from portfolio.internal.biz.services.auth_service import AuthService
-from portfolio.models.account_role import AccountRole
-from portfolio.models.account_session import AccountSession
+from internal.biz.services.account_role import AccountRoleService
+from internal.biz.services.auth_service import AuthService
+from models.account_role import AccountRole
+from models.account_session import AccountSession
 
 
 def check_account_role(func):
@@ -34,7 +34,7 @@ def check_account_role(func):
 def check_account_role_organisation_and_login_required(func):
     def wrapper(*args, **kwargs):
         if not session.get('auth-token'):
-            return "Где токен?"
+            return "Невалидный или устаревший токен"
 
         session_id = AccountSession.get_session_id_from_token(session.get('auth-token'))
         if not session_id:
@@ -66,7 +66,7 @@ def check_account_role_organisation_and_login_required(func):
 def check_account_role_parents_and_login_required(func):
     def wrapper(*args, **kwargs):
         if not session.get('auth-token'):
-            return "Где токен?"
+            return "Невалидный или устаревший токен"
 
         session_id = AccountSession.get_session_id_from_token(session.get('auth-token'))
         if not session_id:

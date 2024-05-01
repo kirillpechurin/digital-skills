@@ -1,4 +1,8 @@
 .idea/
 __pycache__/
+
 env/
-load_env.py
+venv/
+
+static/
+.env

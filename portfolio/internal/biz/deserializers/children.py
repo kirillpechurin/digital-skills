@@ -1,11 +1,12 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.children import Children
-from portfolio.models.parents import Parents
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.children import Children
+from models.parents import Parents
 
 DES_FROM_DB_INFO_CHILDREN = 'des-from-db-info-children'
 DES_FROM_DB_INFO_CHILD = 'des-from-db-info-child'
 DES_FOR_ADD_CHILD = 'des-for-add-child'
 DES_FOR_EDIT_CHILD = 'des-for-edit-child'
+
 
 class ChildrenDeserialize(BaseDeserializer):
 

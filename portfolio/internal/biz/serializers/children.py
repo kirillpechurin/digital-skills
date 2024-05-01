@@ -1,8 +1,8 @@
 from typing import List, Dict
 
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.internal.biz.serializers.events_child import EventsChildSerializer, SER_FOR_DETAIL_EVENTS_CHILD
-from portfolio.models.children import Children
+from internal.biz.serializers.base_serializer import BaseSerializer
+from internal.biz.serializers.events_child import EventsChildSerializer, SER_FOR_DETAIL_EVENTS_CHILD
+from models.children import Children
 
 SER_FOR_DETAIL_CHILD = 'ser-for-detail-child'
 SER_FOR_DETAIL_CHILDREN = 'ser-for-detail-children'

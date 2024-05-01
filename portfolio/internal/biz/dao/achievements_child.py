@@ -1,15 +1,15 @@
 import sqlalchemy
 from sqlalchemy import insert, delete
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.achievements_child import AchievementsChildDeserializer, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.achievements_child import AchievementsChildDeserializer, \
     DES_FROM_DB_ALL_ACHIEVEMENTS, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID
-from portfolio.models.achievements import Achievements
-from portfolio.models.achievements_child import AchievementsChild
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events import Events
-from portfolio.models.organisation import Organisation
+from models.achievements import Achievements
+from models.achievements_child import AchievementsChild
+from models.children_organisation import ChildrenOrganisation
+from models.events import Events
+from models.organisation import Organisation
 
 
 class AchievementsChildDao(BaseDao):
@@ -65,7 +65,6 @@ class AchievementsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
-        print(data)
         data = [dict(row) for row in data]
         return AchievementsChildDeserializer.deserialize(data, DES_FROM_DB_ALL_ACHIEVEMENTS_BY_CHILD_ID), None
 

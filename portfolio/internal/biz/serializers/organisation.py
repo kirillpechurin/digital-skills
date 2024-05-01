@@ -1,11 +1,10 @@
 from typing import List, Dict
 
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.internal.biz.serializers.children import ChildrenSerializer, SER_FOR_DETAIL_CHILD
-from portfolio.internal.biz.serializers.employee import EmployeeSerializer, SER_FOR_DETAIL_EMPLOYEE
-from portfolio.internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
-from portfolio.models.account_role import AccountRole
-from portfolio.models.organisation import Organisation
+from internal.biz.serializers.base_serializer import BaseSerializer
+from internal.biz.serializers.children import ChildrenSerializer, SER_FOR_DETAIL_CHILD
+from internal.biz.serializers.employee import EmployeeSerializer, SER_FOR_DETAIL_EMPLOYEE
+from internal.biz.serializers.events import EventsSerializer, SER_FOR_DETAIL_EVENTS
+from models.organisation import Organisation
 
 SER_FOR_LIST_ORGANISATION = 'ser-for-list-organisation'
 SER_FOR_DETAIL_ORGANISATION = 'ser-for-detail_organisation'

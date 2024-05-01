@@ -1,5 +1,5 @@
-from portfolio.internal.biz.dao.employee import EmployeeDao
-from portfolio.models.employee import Employee
+from internal.biz.dao.employee import EmployeeDao
+from models.employee import Employee
 
 
 class EmployeeService:

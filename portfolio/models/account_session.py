@@ -4,9 +4,9 @@ import jwt
 from sqlalchemy import ForeignKey, Column, Integer
 from sqlalchemy.orm import relationship
 
-from portfolio.configs.internal import SECRET_KEY, ENCRYPT_ALGORITHM
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.account_main import AccountMain
+from configs.settings import SECRET_KEY, ENCRYPT_ALGORITHM
+from models.abstract_model import AbstractModel
+from models.account_main import AccountMain
 
 
 class AccountSession(AbstractModel):

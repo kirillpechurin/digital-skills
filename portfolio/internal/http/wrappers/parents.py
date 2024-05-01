@@ -1,12 +1,12 @@
 from flask import json, session
 
-from portfolio.internal.biz.services.children import ChildrenService
-from portfolio.internal.biz.services.parents import ParentsService
-from portfolio.internal.http.wrappers.auth import required_auth_with_confirmed_email
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_role import AccountRole
-from portfolio.models.children import Children
-from portfolio.models.parents import Parents
+from internal.biz.services.children import ChildrenService
+from internal.biz.services.parents import ParentsService
+from internal.http.wrappers.auth import required_auth_with_confirmed_email
+from models.account_main import AccountMain
+from models.account_role import AccountRole
+from models.children import Children
+from models.parents import Parents
 
 
 def get_parent_id_and_acc_id_with_confirmed_email(func):

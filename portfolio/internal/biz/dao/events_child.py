@@ -3,17 +3,16 @@ from datetime import date
 import sqlalchemy
 from sqlalchemy import and_, insert
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_EVENTS_ORG
-from portfolio.internal.biz.deserializers.events_child import DES_FROM_DB_GET_EVENTS, EventsChildDeserializer, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_EVENTS_ORG
+from internal.biz.deserializers.events_child import EventsChildDeserializer, \
     DES_FROM_DB_GET_EVENTS, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION
-from portfolio.models.children import Children
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events import Events
-from portfolio.models.events_child import EventsChild
-from portfolio.models.organisation import Organisation
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from models.children import Children
+from models.children_organisation import ChildrenOrganisation
+from models.events import Events
+from models.events_child import EventsChild
+from models.organisation import Organisation
 
 
 class EventsChildDao(BaseDao):
@@ -199,7 +198,6 @@ class EventsChildDao(BaseDao):
             ).all()
         if not data:
             return None, None
-        print(data)
         data = [dict(row) for row in data]
         return EventsChildDeserializer.deserialize(data, DES_FROM_DB_GET_INFO_CHILD_ORGANISATION), None
 
@@ -215,7 +213,6 @@ class EventsChildDao(BaseDao):
             ).first()
             if not events_child_db:
                 return None, ErrorEnum.event_child_not_found
-            print(events_child_db)
             events_child_db._status = events_child.status
             sess.commit()
         return events_child, None

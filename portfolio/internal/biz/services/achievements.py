@@ -1,8 +1,8 @@
 from typing import List
 
-from portfolio.internal.biz.dao.achievements import AchievementsDao
-from portfolio.models.achievements import Achievements
-from portfolio.models.events import Events
+from internal.biz.dao.achievements import AchievementsDao
+from models.achievements import Achievements
+from models.events import Events
 
 
 class AchievementsService:

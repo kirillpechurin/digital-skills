@@ -4,36 +4,36 @@ from datetime import date, datetime
 from flask import Blueprint, request, flash, make_response, url_for, render_template
 from werkzeug.utils import redirect
 
-from portfolio.enums.success.success_enum import SuccessEnum
-from portfolio.internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FOR_ADD_ACHIEVEMENT, \
+from enums.success.success_enum import SuccessEnum
+from internal.biz.deserializers.achievements import AchievementsDeserializer, DES_FOR_ADD_ACHIEVEMENT, \
     DES_FOR_EDIT_ACHIEVEMENT
-from portfolio.internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
+from internal.biz.deserializers.employee import EmployeeDeserializer, DES_FOR_ADD_EMPLOYEE, \
     DES_FOR_EDIT_EMPLOYEE
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT, DES_FOR_EDIT_EVENT
-from portfolio.internal.biz.services.achievements import AchievementsService
-from portfolio.internal.biz.services.achievements_child import AchievementsChildService
-from portfolio.internal.biz.services.children_organisation import ChildrenOrganisationService
-from portfolio.internal.biz.services.employee import EmployeeService
-from portfolio.internal.biz.services.events import EventsService
-from portfolio.internal.biz.services.events_child import EventsChildService
-from portfolio.internal.biz.services.organisation import OrganisationService
-from portfolio.internal.biz.services.request_to_organisation import RequestToOrganisationService
-from portfolio.internal.biz.services.utils import calculate_age
-from portfolio.internal.biz.validators.achievements import AddAchievementSchema, EditAchievementSchema
-from portfolio.internal.biz.validators.children import AddChildrenSchema
-from portfolio.internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
-from portfolio.internal.biz.validators.events import AddEventSchema, EditEventSchema
-from portfolio.internal.biz.validators.utils import get_calendar
-from portfolio.internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
-from portfolio.models.account_main import AccountMain
-from portfolio.models.achievements import Achievements
-from portfolio.models.achievements_child import AchievementsChild
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.employee import Employee
-from portfolio.models.events import Events
-from portfolio.models.events_child import EventsChild
-from portfolio.models.organisation import Organisation
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from internal.biz.deserializers.events import EventsDeserializer, DES_FOR_ADD_EVENT, DES_FOR_EDIT_EVENT
+from internal.biz.services.achievements import AchievementsService
+from internal.biz.services.achievements_child import AchievementsChildService
+from internal.biz.services.children_organisation import ChildrenOrganisationService
+from internal.biz.services.employee import EmployeeService
+from internal.biz.services.events import EventsService
+from internal.biz.services.events_child import EventsChildService
+from internal.biz.services.organisation import OrganisationService
+from internal.biz.services.request_to_organisation import RequestToOrganisationService
+from internal.biz.services.utils import calculate_age
+from internal.biz.validators.achievements import AddAchievementSchema, EditAchievementSchema
+from internal.biz.validators.children import AddChildrenSchema
+from internal.biz.validators.employee import AddEmployeeSchema, EditEmployeeSchema
+from internal.biz.validators.events import AddEventSchema, EditEventSchema
+from internal.biz.validators.utils import get_calendar
+from internal.http.wrappers.organisation import get_org_id_and_acc_id_with_confirmed_email
+from models.account_main import AccountMain
+from models.achievements import Achievements
+from models.achievements_child import AchievementsChild
+from models.children_organisation import ChildrenOrganisation
+from models.employee import Employee
+from models.events import Events
+from models.events_child import EventsChild
+from models.organisation import Organisation
+from models.request_to_organisation import RequestToOrganisation
 
 private_office_organisation = Blueprint('organisation/private_office', __name__, template_folder='templates/organisation/private_office', static_folder='static/organisation/private_office')
 

@@ -4,8 +4,8 @@ from typing import Optional
 from sqlalchemy import UniqueConstraint, Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.account_main import AccountMain
+from models.abstract_model import AbstractModel
+from models.account_main import AccountMain
 
 
 class Organisation(AbstractModel):

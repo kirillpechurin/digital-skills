@@ -1,6 +1,6 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_INFO_EVENTS
-from portfolio.models.achievements import Achievements
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_INFO_EVENTS
+from models.achievements import Achievements
 
 DES_FROM_DB_GET_INFO_ACHIEVEMENTS = 'des-from-db-get-info-achievements'
 DES_FROM_DB_ALL_ACHIEVEMENTS = 'des-from-db-all-achievements'

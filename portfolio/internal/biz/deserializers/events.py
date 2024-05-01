@@ -1,7 +1,7 @@
 from typing import List
 
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.events import Events
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.events import Events
 
 DES_FROM_DB_GET_DETAIL_EVENT = "des-from-db-get-detail-event"
 DES_FROM_DB_EVENTS_ORG = 'des-from-db-events-org'

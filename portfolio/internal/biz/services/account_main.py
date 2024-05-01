@@ -1,4 +1,4 @@
-from portfolio.internal.biz.dao.account_main import AccountMainDao
+from internal.biz.dao.account_main import AccountMainDao
 
 
 class AccountMainService:

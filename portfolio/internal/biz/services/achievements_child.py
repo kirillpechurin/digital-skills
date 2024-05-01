@@ -1,5 +1,5 @@
-from portfolio.internal.biz.dao.achievements_child import AchievementsChildDao
-from portfolio.models.achievements_child import AchievementsChild
+from internal.biz.dao.achievements_child import AchievementsChildDao
+from models.achievements_child import AchievementsChild
 
 
 class AchievementsChildService:

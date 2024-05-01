@@ -1,23 +1,21 @@
 import sqlalchemy
 from sqlalchemy import insert, and_, delete
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.internal.biz.dao.account_main import AccountMainDao
-from portfolio.internal.biz.dao.base_dao import BaseDao
-from portfolio.internal.biz.dao.children import ChildrenDao
-from portfolio.internal.biz.dao.children_organisation import ChildrenOrganisationDao
-from portfolio.internal.biz.dao.events import EventsDao
-from portfolio.internal.biz.dao.events_child import EventsChildDao
-from portfolio.internal.biz.deserializers.request_to_organisation import RequestToOrganisationDeserializer, \
+from enums.error.errors_enum import ErrorEnum
+from internal.biz.dao.base_dao import BaseDao
+from internal.biz.dao.children_organisation import ChildrenOrganisationDao
+from internal.biz.dao.events import EventsDao
+from internal.biz.dao.events_child import EventsChildDao
+from internal.biz.deserializers.request_to_organisation import RequestToOrganisationDeserializer, \
     DES_FROM_DB_ALL_ACTIVE_REQUESTS, DES_FROM_DB_DETAIL_REQUEST
-from portfolio.models.account_main import AccountMain
-from portfolio.models.children import Children
-from portfolio.models.children_organisation import ChildrenOrganisation
-from portfolio.models.events import Events
-from portfolio.models.events_child import EventsChild
-from portfolio.models.organisation import Organisation
-from portfolio.models.parents import Parents
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from models.account_main import AccountMain
+from models.children import Children
+from models.children_organisation import ChildrenOrganisation
+from models.events import Events
+from models.events_child import EventsChild
+from models.organisation import Organisation
+from models.parents import Parents
+from models.request_to_organisation import RequestToOrganisation
 
 
 class RequestToOrganisationDao(BaseDao):
@@ -207,7 +205,6 @@ class RequestToOrganisationDao(BaseDao):
             self.sess_transaction.commit()
             return request_to_organisation, None
         except Exception as exc:
-            print(exc)
             self.sess_transaction.rollback()
             return None, ErrorEnum.request_to_organisation_failed
         finally:

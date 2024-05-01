@@ -1,7 +1,7 @@
 from typing import Optional, List
 
-from portfolio.models.achievements_child import AchievementsChild
-from portfolio.models.events_child import EventsChild
+from models.achievements_child import AchievementsChild
+from models.events_child import EventsChild
 
 
 class ActivityChild:

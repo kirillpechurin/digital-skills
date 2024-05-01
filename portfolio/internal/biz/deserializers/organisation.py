@@ -1,5 +1,5 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.organisation import Organisation
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.organisation import Organisation
 
 DES_FROM_DB_ALL_ORGANISATIONS = 'des-from-db-all-organisations'
 DES_FROM_DB_DETAIL_ORGANISATION = 'des-from-db-detail-organisation'

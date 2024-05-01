@@ -4,22 +4,22 @@ from typing import List
 from flask import Blueprint, request, make_response, render_template, url_for, session, flash
 from werkzeug.utils import redirect
 
-from portfolio.enums.error.errors_enum import ErrorEnum
-from portfolio.enums.success.success_enum import SuccessEnum
-from portfolio.internal.biz.deserializers.account_main import DES_FROM_REGISTER, AccountMainDeserializer, DES_FROM_LOGIN
-from portfolio.internal.biz.services.account_main import AccountMainService
-from portfolio.internal.biz.services.auth_service import AuthService
-from portfolio.internal.biz.validators.confirm_code import ConfirmCodeSchema
-from portfolio.internal.biz.validators.login import LoginAuthSchema
-from portfolio.internal.biz.validators.password import EditPasswordSchema
-from portfolio.internal.biz.validators.register import RegisterOrganisationSchema, RegisterParentSchema
-from portfolio.internal.http.wrappers.account_role import check_account_role
-from portfolio.internal.http.wrappers.auth import required_auth, required_auth_with_confirmed_email
-from portfolio.models.account_main import AccountMain
-from portfolio.models.account_role import AccountRole
-from portfolio.models.auth_code import AuthCode
-from portfolio.models.organisation import Organisation
-from portfolio.models.parents import Parents
+from enums.error.errors_enum import ErrorEnum
+from enums.success.success_enum import SuccessEnum
+from internal.biz.deserializers.account_main import DES_FROM_REGISTER, AccountMainDeserializer, DES_FROM_LOGIN
+from internal.biz.services.account_main import AccountMainService
+from internal.biz.services.auth_service import AuthService
+from internal.biz.validators.confirm_code import ConfirmCodeSchema
+from internal.biz.validators.login import LoginAuthSchema
+from internal.biz.validators.password import EditPasswordSchema
+from internal.biz.validators.register import RegisterOrganisationSchema, RegisterParentSchema
+from internal.http.wrappers.account_role import check_account_role
+from internal.http.wrappers.auth import required_auth, required_auth_with_confirmed_email
+from models.account_main import AccountMain
+from models.account_role import AccountRole
+from models.auth_code import AuthCode
+from models.organisation import Organisation
+from models.parents import Parents
 
 account = Blueprint('account', __name__, template_folder='account', static_folder='/account')
 
@@ -138,6 +138,7 @@ def login():
         account_main = AccountMainDeserializer.deserialize(request.form, DES_FROM_LOGIN)
         account_main, err = AuthService.auth_login(account_main)
         if err:
+            print(err)
             flash(err)
             return make_response(
                 redirect(request.headers.get("Referer"))

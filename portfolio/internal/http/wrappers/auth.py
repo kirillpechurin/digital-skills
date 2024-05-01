@@ -1,13 +1,13 @@
-from flask import request, json, session
+from flask import session
 
-from portfolio.internal.biz.services.auth_service import AuthService
-from portfolio.models.account_session import AccountSession
+from internal.biz.services.auth_service import AuthService
+from models.account_session import AccountSession
 
 
 def required_auth(func):
     def wrapper(*args, **kwargs):
         if not session.get('auth-token'):
-            return "Где токен?"
+            return "Невалидный или устаревший токен"
 
         session_id = AccountSession.get_session_id_from_token(session.get('auth-token'))
         if not session_id:
@@ -29,7 +29,7 @@ def required_auth(func):
 def required_auth_with_unconfirmed_email(func):
     def wrapper(*args, **kwargs):
         if not session.get('auth-token'):
-            return "Где токен?"
+            return "Невалидный или устаревший токен"
 
         session_id = AccountSession.get_session_id_from_token(session.get('auth-token'))
         if not session_id:
@@ -54,7 +54,7 @@ def required_auth_with_unconfirmed_email(func):
 def required_auth_with_confirmed_email(func):
     def wrapper(*args, **kwargs):
         if not session.get('auth-token'):
-            return "Где токен?"
+            return "Невалидный или устаревший токен"
 
         session_id = AccountSession.get_session_id_from_token(session.get('auth-token'))
         if not session_id:

@@ -1,6 +1,6 @@
 from marshmallow import fields, Schema
 
-from portfolio.internal.biz.validators.utils import date_validate
+from internal.biz.validators.utils import date_validate
 
 
 class AddChildrenSchema(Schema):

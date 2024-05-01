@@ -1,5 +1,4 @@
-from portfolio.internal.biz.dao.parents import ParentsDao
-from portfolio.models.parents import Parents
+from internal.biz.dao.parents import ParentsDao
 
 
 class ParentsService:

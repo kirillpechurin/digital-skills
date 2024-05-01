@@ -1,12 +1,11 @@
 from typing import List
 
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILDREN, \
-    DES_FROM_DB_INFO_CHILD
-from portfolio.internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_INFO_EVENTS, \
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from internal.biz.deserializers.children import ChildrenDeserialize, DES_FROM_DB_INFO_CHILD
+from internal.biz.deserializers.events import EventsDeserializer, DES_FROM_DB_INFO_EVENTS, \
     DES_FROM_DB_GET_DETAIL_EVENT
-from portfolio.internal.biz.deserializers.parents import ParentsDeserializer, DES_FROM_DB_INFO_PARENTS
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from internal.biz.deserializers.parents import ParentsDeserializer, DES_FROM_DB_INFO_PARENTS
+from models.request_to_organisation import RequestToOrganisation
 
 DES_FROM_DB_ALL_ACTIVE_REQUESTS = 'des-from-db-all-active-requests'
 DES_FROM_DB_DETAIL_REQUEST = 'des-from-db-detail-requests'

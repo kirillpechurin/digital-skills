@@ -1,6 +1,6 @@
-from portfolio.drivers.mail_server import MailServer, EMAIL_ACCEPT_REQUEST
-from portfolio.internal.biz.dao.request_to_organisation import RequestToOrganisationDao
-from portfolio.models.request_to_organisation import RequestToOrganisation
+from drivers.mail_server import MailServer, EMAIL_ACCEPT_REQUEST
+from internal.biz.dao.request_to_organisation import RequestToOrganisationDao
+from models.request_to_organisation import RequestToOrganisation
 
 
 class RequestToOrganisationService:

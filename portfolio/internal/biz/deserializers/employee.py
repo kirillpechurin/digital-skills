@@ -1,5 +1,5 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.models.employee import Employee
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from models.employee import Employee
 
 DES_FROM_DB_ALL_EMPLOYEE = "des-from-db-all-employee"
 DES_FROM_DB_DETAIL_EMPLOYEE = "des-from-db-detail-employee"

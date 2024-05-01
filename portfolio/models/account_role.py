@@ -4,8 +4,8 @@ from typing import Optional
 import jwt
 from sqlalchemy import Column, String
 
-from portfolio.configs.internal import SECRET_KEY, ENCRYPT_ALGORITHM
-from portfolio.models.abstract_model import AbstractModel
+from configs.settings import SECRET_KEY, ENCRYPT_ALGORITHM
+from models.abstract_model import AbstractModel
 
 
 class AccountRole(AbstractModel):

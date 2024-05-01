@@ -1,4 +1,4 @@
-from portfolio.internal.biz.dao.organisation import OrganisationDao
+from internal.biz.dao.organisation import OrganisationDao
 
 
 class OrganisationService:

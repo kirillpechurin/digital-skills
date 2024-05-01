@@ -22,9 +22,9 @@ class Pg:
 
     @classmethod
     def init_model(cls):
-        import portfolio.models.abstract_model as abc_model
+        import models.abstract_model as abc_model
         base = abc_model.Base
-        from portfolio.models import \
+        from models import \
             account_main, \
             account_role, \
             account_session, \

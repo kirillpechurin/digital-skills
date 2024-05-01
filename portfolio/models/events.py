@@ -1,11 +1,11 @@
 from datetime import datetime, date
 from typing import Optional
 
-from sqlalchemy import Column, String, Date, Integer, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, String, Date, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.organisation import Organisation
+from models.abstract_model import AbstractModel
+from models.organisation import Organisation
 
 
 class Events(AbstractModel):

@@ -1,7 +1,5 @@
-from typing import List
-
-from portfolio.internal.biz.serializers.base_serializer import BaseSerializer
-from portfolio.models.employee import Employee
+from internal.biz.serializers.base_serializer import BaseSerializer
+from models.employee import Employee
 
 SER_FOR_DETAIL_EMPLOYEE = 'ser-for-detail-employee'
 

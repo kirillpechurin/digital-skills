@@ -1,7 +1,7 @@
-from portfolio.internal.biz.deserializers.base_deserializer import BaseDeserializer
-from portfolio.internal.biz.deserializers.children import DES_FROM_DB_INFO_CHILDREN, ChildrenDeserialize, \
-    DES_FOR_ADD_CHILD, DES_FROM_DB_INFO_CHILD
-from portfolio.models.children_organisation import ChildrenOrganisation
+from internal.biz.deserializers.base_deserializer import BaseDeserializer
+from internal.biz.deserializers.children import ChildrenDeserialize, \
+    DES_FROM_DB_INFO_CHILD
+from models.children_organisation import ChildrenOrganisation
 
 DES_FROM_DB_LIST_LEARNERS = 'des-from-db-list-learners'
 DES_FROM_DB_GET_DETAIL_LEARNER = 'des-from-db-get-detail-learner'

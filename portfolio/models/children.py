@@ -4,8 +4,8 @@ from typing import Optional
 from sqlalchemy import String, Date, Column, ForeignKey, UniqueConstraint, Integer
 from sqlalchemy.orm import relationship
 
-from portfolio.models.abstract_model import AbstractModel
-from portfolio.models.parents import Parents
+from models.abstract_model import AbstractModel
+from models.parents import Parents
 
 
 class Children(AbstractModel):
